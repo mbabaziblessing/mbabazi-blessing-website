@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Code, Cpu, Sparkles, Palette, Rocket, Brain, ArrowDown,
   Eye, Briefcase, Calendar, Download, MapPin,
@@ -33,12 +33,12 @@ const buttons = [
 ];
 
 const floatingIcons = [
-  { Icon: Code, top: '14%', left: '7%', delay: 0, dur: 6 },
-  { Icon: Cpu, top: '20%', right: '6%', delay: 1.2, dur: 7 },
-  { Icon: Sparkles, bottom: '26%', left: '9%', delay: 0.6, dur: 5.5 },
-  { Icon: Palette, bottom: '16%', right: '10%', delay: 1.8, dur: 6.8 },
-  { Icon: Brain, top: '48%', right: '4%', delay: 2.2, dur: 8 },
-  { Icon: Rocket, bottom: '44%', left: '4%', delay: 1, dur: 7.4 },
+  { Icon: Code, top: '14%', left: '7%' },
+  { Icon: Cpu, top: '20%', right: '6%' },
+  { Icon: Sparkles, bottom: '26%', left: '9%' },
+  { Icon: Palette, bottom: '16%', right: '10%' },
+  { Icon: Brain, top: '48%', right: '4%' },
+  { Icon: Rocket, bottom: '44%', left: '4%' },
 ];
 
 function useTypewriter(words, { typeSpeed = 90, deleteSpeed = 40, pause = 1600 } = {}) {
@@ -70,48 +70,22 @@ function useTypewriter(words, { typeSpeed = 90, deleteSpeed = 40, pause = 1600 }
 export default function Hero() {
   const typed = useTypewriter(titleRoles);
 
-  // Mouse parallax
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 50, damping: 20 });
-  const sy = useSpring(my, { stiffness: 50, damping: 20 });
-  const blob1X = useTransform(sx, [-0.5, 0.5], [-40, 40]);
-  const blob1Y = useTransform(sy, [-0.5, 0.5], [-30, 30]);
-  const blob2X = useTransform(sx, [-0.5, 0.5], [30, -30]);
-  const blob2Y = useTransform(sy, [-0.5, 0.5], [20, -20]);
-  const iconsX = useTransform(sx, [-0.5, 0.5], [12, -12]);
-  const iconsY = useTransform(sy, [-0.5, 0.5], [8, -8]);
-
-  const handleMouse = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    mx.set(px);
-    my.set(py);
-  };
-
   return (
     <section
-      onMouseMove={handleMouse}
       className="relative min-h-screen flex items-center overflow-hidden"
     >
       {/* Background */}
       <div className="absolute inset-0 bg-obsidian" />
       <motion.div
-        style={{ x: blob1X, y: blob1Y }}
-        animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.28, 0.2] }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+        initial={{ opacity: 0.24, scale: 1.08 }}
         className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[140px] pointer-events-none"
       />
       <motion.div
-        style={{ x: blob2X, y: blob2Y }}
-        animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.22, 0.15] }}
-        transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+        initial={{ opacity: 0.19, scale: 1.1 }}
         className="absolute bottom-0 right-1/4 w-[700px] h-[700px] bg-blue-600/15 rounded-full blur-[150px] pointer-events-none"
       />
       <motion.div
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+        initial={{ opacity: 0.1, scale: 1.05 }}
         className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-vapor/10 rounded-full blur-[120px] pointer-events-none"
       />
       <div
@@ -120,14 +94,13 @@ export default function Hero() {
       />
 
       {/* Floating tech icons */}
-      <motion.div style={{ x: iconsX, y: iconsY }} className="absolute inset-0 pointer-events-none hidden lg:block">
-        {floatingIcons.map(({ Icon, top, left, right, bottom, delay, dur }, i) => (
+      <motion.div className="absolute inset-0 pointer-events-none hidden lg:block">
+        {floatingIcons.map(({ Icon, top, left, right, bottom }, i) => (
           <motion.div
             key={i}
             className="absolute text-vapor/25"
             style={{ top, left, right, bottom }}
-            animate={{ y: [0, -22, 0], rotate: [0, 8, 0], opacity: [0.2, 0.4, 0.2] }}
-            transition={{ duration: dur, repeat: Infinity, delay, ease: 'easeInOut' }}
+            initial={{ opacity: 0.3 }}
           >
             <Icon size={38} strokeWidth={1.4} />
           </motion.div>
@@ -213,7 +186,6 @@ export default function Hero() {
             className="order-1 lg:order-2 flex justify-center lg:justify-end"
           >
             <motion.div
-              style={{ x: useTransform(sx, [-0.5, 0.5], [-12, 12]), y: useTransform(sy, [-0.5, 0.5], [-8, 8]) }}
               className="relative"
             >
               <div className="absolute -inset-3 bg-gradient-to-br from-violet-500/30 via-vapor/20 to-blue-500/30 rounded-[2rem] blur-2xl" />
@@ -263,7 +235,7 @@ export default function Hero() {
         aria-label="Scroll to content"
       >
         <span className="text-[10px] font-mono tracking-[0.3em] uppercase">Scroll Down</span>
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 1.6 }}>
+        <motion.div>
           <ArrowDown size={16} className="text-vapor" />
         </motion.div>
       </motion.button>
