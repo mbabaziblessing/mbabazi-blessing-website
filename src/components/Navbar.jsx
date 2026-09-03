@@ -8,7 +8,6 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import {
-  LOGO_URL,
   CONTACT,
   WhatsAppIcon,
 } from "./portfolio/shared";
@@ -129,9 +128,13 @@ export default function Navbar() {
           >
             <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white">
               <img
-                src={LOGO_URL}
+                src="/assets/portfolio/logo-small.webp"
                 alt="MB"
+                width="144"
+                height="96"
                 className="h-full w-full object-contain"
+                loading="eager"
+                decoding="async"
               />
             </div>
 
