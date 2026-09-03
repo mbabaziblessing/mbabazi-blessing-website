@@ -236,7 +236,20 @@ export async function onRequest(context) {
           : error?.providerStatus >= 500
             ? "provider_server_error"
             : "request_error";
-    console.error("Bless AI provider error:", category, error?.providerStatus || "");
-    return jsonResponse(fallbackResponse, 502, origin);
+    console.error(
+      "Bless AI provider error:",
+      category,
+      error?.providerStatus || ""
+    );
+
+    return jsonResponse(
+      {
+        ...fallbackResponse,
+        debugCategory: category,
+        debugStatus: error?.providerStatus || null,
+      },
+      502,
+      origin
+    );
   }
 }
