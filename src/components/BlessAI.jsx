@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Bot, Send, Sparkles, X } from "lucide-react";
+import { Bot, Send, X } from "lucide-react";
 
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_CONVERSATION_MESSAGES = 20;
 const API_PATH = "/api/bless-ai";
+const BLESS_AI_ICON = "/assets/portfolio/Bless-Ai.png";
 const WHATSAPP_ACTION = {
   label: "Chat on WhatsApp",
   path: "https://wa.me/256707333422",
@@ -208,7 +209,14 @@ export default function BlessAI() {
           <header className="flex items-center justify-between border-b border-white/10 px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-vapor/15 text-vapor ring-1 ring-vapor/30">
-                <Sparkles size={18} aria-hidden="true" />
+                <img
+                  src={BLESS_AI_ICON}
+                  alt=""
+                  width="36"
+                  height="36"
+                  className="h-full w-full rounded-xl object-cover"
+                  decoding="async"
+                />
               </div>
               <div>
                 <h2 id="bless-ai-title" className="text-sm font-medium text-alabaster">
@@ -343,7 +351,14 @@ export default function BlessAI() {
           aria-expanded={open}
           aria-controls="bless-ai-dialog"
         >
-          <Sparkles size={17} className="text-vapor" aria-hidden="true" />
+          <img
+            src={BLESS_AI_ICON}
+            alt=""
+            width="36"
+            height="24"
+            className="h-6 w-8 rounded-md object-cover"
+            decoding="async"
+          />
           Bless AI
         </button>
       )}
