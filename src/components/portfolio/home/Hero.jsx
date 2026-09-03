@@ -190,7 +190,7 @@ export default function Hero() {
             >
               <div className="absolute -inset-3 bg-gradient-to-br from-violet-500/30 via-vapor/20 to-blue-500/30 rounded-[2rem] blur-2xl" />
               <div className="relative w-64 h-80 sm:w-80 sm:h-[420px] lg:w-96 lg:h-[500px] rounded-[2rem] overflow-hidden border border-white/10">
-                <img src={IMAGES.portrait} alt="Mbabazi Blessing — Fashion Entrepreneur and Full-Stack Developer" className="w-full h-full object-cover" loading="eager" width="384" height="500" />
+                <img src="/assets/portfolio/portrait.webp" alt="Mbabazi Blessing — Fashion Entrepreneur and Full-Stack Developer" className="w-full h-full object-cover" loading="eager" fetchPriority="high" decoding="async" width="384" height="500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-obsidian/70 via-transparent to-transparent" />
               </div>
 
