@@ -15,7 +15,7 @@ export default {
         elevated: "#1A1C28",
 
         alabaster: "#F5F5F7",
-        graphite: "#8F8B98",
+        graphite: "#B8B4C2",
 
         vapor: "#AA3BFF",
         "vapor-light": "#C78AFF",
