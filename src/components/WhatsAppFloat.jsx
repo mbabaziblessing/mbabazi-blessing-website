@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { WhatsAppIcon } from '@/components/portfolio/shared';
 import { openWhatsApp, WhatsAppMessages } from '@/lib/whatsapp';
 
@@ -28,36 +27,31 @@ export default function WhatsAppFloat() {
   };
 
   return (
-    <AnimatePresence>
-      {!hidden && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.5, y: 20 }}
-          transition={{ duration: 0.3 }}
-          className="fixed bottom-4 left-4 z-[9998]"
-        >
-          {showTip && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="absolute bottom-16 left-0 glass-strong rounded-xl px-3 py-2 text-xs text-alabaster whitespace-nowrap shadow-lg border border-white/10"
-            >
+    <div
+      className={`fixed bottom-4 left-4 z-[9998] transition-all duration-300 ${
+        hidden
+          ? 'pointer-events-none translate-y-5 scale-75 opacity-0'
+          : 'translate-y-0 scale-100 opacity-100'
+      }`}
+    >
+      <div
+        className={`absolute bottom-16 left-0 whitespace-nowrap rounded-xl glass-strong border border-white/10 px-3 py-2 text-xs text-alabaster shadow-lg transition-all duration-300 ${
+          showTip
+            ? 'visible translate-x-0 opacity-100'
+            : 'invisible -translate-x-2 opacity-0'
+        }`}
+      >
               Need help? Chat on WhatsApp
               <button onClick={() => setShowTip(false)} className="ml-2 text-graphite hover:text-alabaster" aria-label="Dismiss tooltip">✕</button>
-            </motion.div>
-          )}
-          <button
-            onClick={handleClick}
-            aria-label="Chat on WhatsApp"
-            className="relative w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-2xl shadow-[#25D366]/30 hover:scale-110 transition"
-          >
-            <span className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-20" aria-hidden="true" />
-            <WhatsAppIcon size={28} className="text-white relative z-10" />
-          </button>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+      <button
+        onClick={handleClick}
+        aria-label="Chat on WhatsApp"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-2xl shadow-[#25D366]/30 transition hover:scale-110"
+      >
+        <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-20" aria-hidden="true" />
+        <WhatsAppIcon size={28} className="relative z-10 text-white" />
+      </button>
+    </div>
   );
 }

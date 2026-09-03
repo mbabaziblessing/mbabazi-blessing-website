@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   Menu,
@@ -67,7 +66,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const next = window.scrollY > 20;
+      setScrolled((current) => current === next ? current : next);
     };
 
     handleScroll();
@@ -183,27 +183,13 @@ export default function Navbar() {
                     />
                   </button>
 
-                  <AnimatePresence>
-                    {openDropdown === item.label && (
-                      <motion.div
-                        initial={{
-                          opacity: 0,
-                          y: 8,
-                          scale: 0.98,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                          scale: 1,
-                        }}
-                        exit={{
-                          opacity: 0,
-                          y: 8,
-                          scale: 0.98,
-                        }}
-                        transition={{ duration: 0.18 }}
-                        className="absolute left-0 top-full mt-2 min-w-[220px] rounded-2xl border border-white/10 bg-obsidian/95 p-2 shadow-2xl shadow-black/40 backdrop-blur-2xl"
-                      >
+                  <div
+                    className={`absolute left-0 top-full mt-2 min-w-[220px] rounded-2xl border border-white/10 bg-obsidian/95 p-2 shadow-2xl shadow-black/40 backdrop-blur-2xl transition-all duration-200 ${
+                      openDropdown === item.label
+                        ? "visible translate-y-0 opacity-100"
+                        : "invisible translate-y-2 opacity-0"
+                    }`}
+                  >
                         {item.children.map((child) => (
                           <Link
                             key={child.path}
@@ -221,9 +207,7 @@ export default function Navbar() {
                             )}
                           </Link>
                         ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  </div>
                 </div>
               ) : (
                 <Link
@@ -286,23 +270,13 @@ export default function Navbar() {
       </header>
 
       {/* Mobile navigation */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: -20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-              y: -20,
-            }}
-            className="fixed inset-x-0 top-16 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-white/10 bg-obsidian/98 px-5 pb-8 pt-4 shadow-2xl backdrop-blur-2xl xl:hidden"
-          >
+      <div
+        className={`fixed inset-x-0 top-16 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-white/10 bg-obsidian/98 px-5 pb-8 pt-4 shadow-2xl backdrop-blur-2xl transition-all duration-200 xl:hidden ${
+          mobileOpen
+            ? "visible translate-y-0 opacity-100"
+            : "invisible -translate-y-5 opacity-0"
+        }`}
+      >
             <div className="mx-auto max-w-2xl">
               <a
                 href={CONTACT.whatsappLink}
@@ -345,23 +319,14 @@ export default function Navbar() {
                         />
                       </button>
 
-                      <AnimatePresence>
-                        {openDropdown === item.label && (
-                          <motion.div
-                            initial={{
-                              height: 0,
-                              opacity: 0,
-                            }}
-                            animate={{
-                              height: "auto",
-                              opacity: 1,
-                            }}
-                            exit={{
-                              height: 0,
-                              opacity: 0,
-                            }}
-                            className="overflow-hidden pl-3"
-                          >
+                      <div
+                        className={`grid overflow-hidden pl-3 transition-all duration-200 ${
+                          openDropdown === item.label
+                            ? "grid-rows-[1fr] opacity-100"
+                            : "grid-rows-[0fr] opacity-0"
+                        }`}
+                      >
+                        <div className="min-h-0">
                             {item.children.map((child) => (
                               <Link
                                 key={child.path}
@@ -379,9 +344,8 @@ export default function Navbar() {
                                 )}
                               </Link>
                             ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                        </div>
+                      </div>
                     </div>
                   ) : (
                     <Link
@@ -404,9 +368,7 @@ export default function Navbar() {
                 )}
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </>
   );
 }
