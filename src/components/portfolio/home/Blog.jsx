@@ -73,7 +73,13 @@ export default function Blog() {
                     <span className="flex items-center gap-1"><User size={11} /> {a.author}</span>
                     <span className="flex items-center gap-1"><Clock size={11} /> {a.readTime}</span>
                   </div>
-                  <Link to="/blog" className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-medium bg-vapor/10 text-vapor hover:bg-vapor hover:text-white transition">Read More <ArrowRight size={13} /></Link>
+                  <Link
+                    to="/blog"
+                    className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-medium bg-vapor/10 text-vapor hover:bg-vapor hover:text-white transition"
+                  >
+                    Explore This Topic
+                    <ArrowRight size={13} />
+                  </Link>
                 </div>
               </motion.article>
             ))}

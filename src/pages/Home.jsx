@@ -231,7 +231,7 @@ export default function Home() {
               to="/blog"
               className="hidden items-center gap-1 text-sm text-vapor transition-all hover:gap-2 sm:flex"
             >
-              Read More
+              View All Blog Articles
               <ArrowRight size={14} />
             </Link>
           </div>
