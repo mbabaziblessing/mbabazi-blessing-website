@@ -130,7 +130,7 @@ export default function BookConsultation() {
           <h3 className="font-heading text-2xl sm:text-3xl font-light text-alabaster mb-3">Ready to start your next project?</h3>
           <p className="text-graphite font-light mb-6">Book your consultation today and let's build something exceptional together.</p>
           <div className="flex flex-wrap justify-center gap-3">
-            <a href="https://calendly.com/mbabaziblessing/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-vapor text-white rounded-xl font-medium text-sm hover:bg-vapor/90 transition">Book a Consultation <ArrowRight size={15} /></a>
+            <a href="https://calendly.com/mbabaziblessing/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-vapor-dark text-white rounded-xl font-medium text-sm hover:bg-vapor transition">Book a Consultation <ArrowRight size={15} /></a>
             <Link to="/services" className="flex items-center gap-2 px-6 py-3 glass text-alabaster rounded-xl font-medium text-sm hover:bg-white/10 transition">View All Services</Link>
           </div>
         </motion.div>
