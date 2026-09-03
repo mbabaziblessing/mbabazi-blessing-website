@@ -5,15 +5,20 @@ import { Bot, Send, X } from "lucide-react";
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_CONVERSATION_MESSAGES = 20;
 const API_PATH = "/api/bless-ai";
+
+// Keep the existing Bless AI widget artwork unchanged.
 const BLESS_AI_ICON = "/assets/portfolio/Bless-Ai.png";
+
 const WHATSAPP_ACTION = {
   label: "Chat on WhatsApp",
   path: "https://wa.me/256707333422",
 };
+
 const APPROVED_EXTERNAL_ACTIONS = new Set([
   WHATSAPP_ACTION.path,
   "https://calendly.com/mbabaziblessing/",
 ]);
+
 const INTERNAL_ACTION_PATHS = new Set([
   "/",
   "/about",
@@ -51,8 +56,16 @@ const suggestions = [
 ];
 
 function isSafeAction(action) {
-  if (!action || typeof action !== "object") return false;
-  if (typeof action.label !== "string" || typeof action.path !== "string") return false;
+  if (!action || typeof action !== "object") {
+    return false;
+  }
+
+  if (
+    typeof action.label !== "string" ||
+    typeof action.path !== "string"
+  ) {
+    return false;
+  }
 
   if (
     INTERNAL_ACTION_PATHS.has(action.path) ||
@@ -66,7 +79,9 @@ function isSafeAction(action) {
 }
 
 function safeActions(actions) {
-  if (!Array.isArray(actions)) return [];
+  if (!Array.isArray(actions)) {
+    return [];
+  }
 
   return actions
     .filter(isSafeAction)
@@ -80,7 +95,9 @@ function safeActions(actions) {
 
 function createMessage(role, content, actions = []) {
   return {
-    id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    id: `${role}-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2)}`,
     role,
     content,
     actions,
@@ -92,6 +109,7 @@ export default function BlessAI() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([initialMessage]);
   const [loading, setLoading] = useState(false);
+
   const launcherRef = useRef(null);
   const inputRef = useRef(null);
   const messagesRef = useRef(null);
@@ -99,14 +117,25 @@ export default function BlessAI() {
 
   useEffect(() => {
     const handleEscape = (event) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
     };
 
     if (open) {
       wasOpenRef.current = true;
+
       document.addEventListener("keydown", handleEscape);
-      window.dispatchEvent(new CustomEvent("bless-chat-toggle", { detail: { open: true } }));
-      requestAnimationFrame(() => inputRef.current?.focus());
+
+      window.dispatchEvent(
+        new CustomEvent("bless-chat-toggle", {
+          detail: { open: true },
+        })
+      );
+
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+      });
     }
 
     return () => {
@@ -116,41 +145,82 @@ export default function BlessAI() {
 
   useEffect(() => {
     if (!open && wasOpenRef.current) {
-      window.dispatchEvent(new CustomEvent("bless-chat-toggle", { detail: { open: false } }));
+      window.dispatchEvent(
+        new CustomEvent("bless-chat-toggle", {
+          detail: { open: false },
+        })
+      );
+
       launcherRef.current?.focus();
     }
   }, [open]);
 
   useEffect(() => {
     const container = messagesRef.current;
-    if (container) container.scrollTop = container.scrollHeight;
+
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages, loading, open]);
 
-  const closeWidget = () => setOpen(false);
+  const closeWidget = () => {
+    setOpen(false);
+  };
 
   const sendMessage = async (messageText = input) => {
     const message = messageText.trim();
-    if (!message || loading || message.length > MAX_MESSAGE_LENGTH) return;
+
+    if (
+      !message ||
+      loading ||
+      message.length > MAX_MESSAGE_LENGTH
+    ) {
+      return;
+    }
 
     const userMessage = createMessage("user", message);
-    const conversation = messages
-      .filter((item) => item.role === "user" || item.role === "assistant")
-      .slice(-MAX_CONVERSATION_MESSAGES)
-      .map(({ role, content }) => ({ role, content }));
 
-    setMessages((current) => [...current, userMessage]);
+    const conversation = messages
+      .filter(
+        (item) =>
+          item.role === "user" ||
+          item.role === "assistant"
+      )
+      .slice(-MAX_CONVERSATION_MESSAGES)
+      .map(({ role, content }) => ({
+        role,
+        content,
+      }));
+
+    setMessages((current) => [
+      ...current,
+      userMessage,
+    ]);
+
     setInput("");
     setLoading(true);
 
     try {
       const response = await fetch(API_PATH, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, conversation }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+          conversation,
+        }),
       });
 
-      const result = await response.json().catch(() => null);
-      if (!response.ok || !result || typeof result.reply !== "string") {
+      const result = await response
+        .json()
+        .catch(() => null);
+
+      if (
+        !response.ok ||
+        !result ||
+        typeof result.reply !== "string"
+      ) {
         throw new Error("Assistant request failed");
       }
 
@@ -159,7 +229,11 @@ export default function BlessAI() {
         result.reply,
         safeActions(result.actions)
       );
-      setMessages((current) => [...current, assistantMessage]);
+
+      setMessages((current) => [
+        ...current,
+        assistantMessage,
+      ]);
 
       if (result.showLeadForm === true) {
         setMessages((current) => [
@@ -170,13 +244,21 @@ export default function BlessAI() {
           ),
         ]);
       }
-    } catch {
+    } catch (error) {
+      console.error("Bless AI request failed:", error);
+
       setMessages((current) => [
         ...current,
         createMessage(
           "assistant",
           "Sorry, I couldn't respond right now. Please try again shortly, or contact Mbabazi directly.",
-          [WHATSAPP_ACTION, { label: "Contact page", path: "/contact" }]
+          [
+            WHATSAPP_ACTION,
+            {
+              label: "Contact page",
+              path: "/contact",
+            },
+          ]
         ),
       ]);
     } finally {
@@ -190,7 +272,10 @@ export default function BlessAI() {
   };
 
   const handleInputKeyDown = (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
       event.preventDefault();
       sendMessage();
     }
@@ -208,7 +293,7 @@ export default function BlessAI() {
         >
           <header className="flex items-center justify-between border-b border-white/10 px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-vapor/15 text-vapor ring-1 ring-vapor/30">
+              <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-vapor/15 text-vapor ring-1 ring-vapor/30">
                 <img
                   src={BLESS_AI_ICON}
                   alt=""
@@ -218,20 +303,31 @@ export default function BlessAI() {
                   decoding="async"
                 />
               </div>
+
               <div>
-                <h2 id="bless-ai-title" className="text-sm font-medium text-alabaster">
+                <h2
+                  id="bless-ai-title"
+                  className="text-sm font-medium text-alabaster"
+                >
                   Bless AI
                 </h2>
-                <p className="text-[11px] text-graphite">Digital Assistant</p>
+
+                <p className="text-[11px] text-graphite">
+                  Digital Assistant
+                </p>
               </div>
             </div>
+
             <button
               type="button"
               onClick={closeWidget}
               className="rounded-lg p-2 text-graphite transition hover:bg-white/10 hover:text-alabaster focus:outline-none focus:ring-2 focus:ring-vapor"
               aria-label="Close Bless AI"
             >
-              <X size={18} aria-hidden="true" />
+              <X
+                size={18}
+                aria-hidden="true"
+              />
             </button>
           </header>
 
@@ -243,7 +339,11 @@ export default function BlessAI() {
             {messages.map((item) => (
               <div
                 key={item.id}
-                className={`flex ${item.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex ${
+                  item.role === "user"
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
               >
                 <div className="max-w-[88%]">
                   <div
@@ -255,21 +355,35 @@ export default function BlessAI() {
                   >
                     {item.content}
                   </div>
+
                   {item.actions?.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {item.actions.map((action) =>
-                        (INTERNAL_ACTION_PATHS.has(action.path) ||
-                          action.path.startsWith("/case-studies/") ||
-                          action.path.startsWith("/blog/")) ? (
-                          <Link
-                            key={`${item.id}-${action.path}`}
-                            to={action.path}
-                            onClick={closeWidget}
-                            className="rounded-lg border border-vapor/40 px-2.5 py-1.5 text-xs text-vapor transition hover:bg-vapor/10 focus:outline-none focus:ring-2 focus:ring-vapor"
-                          >
-                            {action.label}
-                          </Link>
-                        ) : (
+                      {item.actions.map((action) => {
+                        const isInternal =
+                          INTERNAL_ACTION_PATHS.has(
+                            action.path
+                          ) ||
+                          action.path.startsWith(
+                            "/case-studies/"
+                          ) ||
+                          action.path.startsWith(
+                            "/blog/"
+                          );
+
+                        if (isInternal) {
+                          return (
+                            <Link
+                              key={`${item.id}-${action.path}`}
+                              to={action.path}
+                              onClick={closeWidget}
+                              className="rounded-lg border border-vapor/40 px-2.5 py-1.5 text-xs text-vapor transition hover:bg-vapor/10 focus:outline-none focus:ring-2 focus:ring-vapor"
+                            >
+                              {action.label}
+                            </Link>
+                          );
+                        }
+
+                        return (
                           <a
                             key={`${item.id}-${action.path}`}
                             href={action.path}
@@ -279,47 +393,75 @@ export default function BlessAI() {
                           >
                             {action.label}
                           </a>
-                        )
-                      )}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
               </div>
             ))}
 
-            {messages.length === 1 && !loading && (
-              <div className="flex flex-wrap gap-2 pt-1">
-                {suggestions.map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => sendMessage(suggestion)}
-                    className="rounded-full border border-white/15 px-3 py-1.5 text-left text-xs text-graphite transition hover:border-vapor/50 hover:text-alabaster focus:outline-none focus:ring-2 focus:ring-vapor"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            )}
+            {messages.length === 1 &&
+              !loading && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      type="button"
+                      onClick={() =>
+                        sendMessage(suggestion)
+                      }
+                      className="rounded-full border border-white/15 px-3 py-1.5 text-left text-xs text-graphite transition hover:border-vapor/50 hover:text-alabaster focus:outline-none focus:ring-2 focus:ring-vapor"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              )}
 
             {loading && (
-              <div className="flex items-center gap-2 text-xs text-graphite" role="status" aria-label="Bless AI is typing">
-                <Bot size={15} className="text-vapor" aria-hidden="true" />
-                <span className="motion-safe:animate-pulse">Bless AI is typing...</span>
+              <div
+                className="flex items-center gap-2 text-xs text-graphite"
+                role="status"
+                aria-label="Bless AI is typing"
+              >
+                <Bot
+                  size={15}
+                  className="text-vapor"
+                  aria-hidden="true"
+                />
+
+                <span className="motion-safe:animate-pulse">
+                  Bless AI is typing...
+                </span>
               </div>
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="border-t border-white/10 p-3 sm:p-4">
-            <label htmlFor="bless-ai-message" className="sr-only">
+          <form
+            onSubmit={handleSubmit}
+            className="border-t border-white/10 p-3 sm:p-4"
+          >
+            <label
+              htmlFor="bless-ai-message"
+              className="sr-only"
+            >
               Message Bless AI
             </label>
+
             <div className="flex items-end gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-2 focus-within:border-vapor/60">
               <textarea
                 ref={inputRef}
                 id="bless-ai-message"
                 value={input}
-                onChange={(event) => setInput(event.target.value.slice(0, MAX_MESSAGE_LENGTH))}
+                onChange={(event) =>
+                  setInput(
+                    event.target.value.slice(
+                      0,
+                      MAX_MESSAGE_LENGTH
+                    )
+                  )
+                }
                 onKeyDown={handleInputKeyDown}
                 placeholder="Ask Bless AI..."
                 rows={1}
@@ -327,16 +469,25 @@ export default function BlessAI() {
                 disabled={loading}
                 className="max-h-24 min-h-9 flex-1 resize-none bg-transparent px-1.5 py-2 text-sm text-alabaster outline-none placeholder:text-graphite disabled:cursor-not-allowed disabled:opacity-60"
               />
+
               <button
                 type="submit"
-                disabled={loading || !input.trim()}
+                disabled={
+                  loading || !input.trim()
+                }
                 className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-vapor text-white transition hover:bg-vapor/90 focus:outline-none focus:ring-2 focus:ring-vapor disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Send message to Bless AI"
               >
-                <Send size={16} aria-hidden="true" />
+                <Send
+                  size={16}
+                  aria-hidden="true"
+                />
               </button>
             </div>
-            <p className="mt-1.5 text-[10px] text-graphite/70">Shift+Enter for a new line</p>
+
+            <p className="mt-1.5 text-[10px] text-graphite/70">
+              Shift+Enter for a new line
+            </p>
           </form>
         </section>
       )}
@@ -359,7 +510,8 @@ export default function BlessAI() {
             className="h-6 w-8 rounded-md object-cover"
             decoding="async"
           />
-          Bless AI
+
+          <span>Bless AI</span>
         </button>
       )}
     </>

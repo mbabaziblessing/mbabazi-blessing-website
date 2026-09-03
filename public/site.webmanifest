@@ -1,5 +1,5 @@
 ﻿{
-  "name": "Mbabazi Blessing â€” Personal Portfolio",
+  "name": "Mbabazi Blessing — Personal Portfolio",
   "short_name": "Mbabazi Blessing",
   "description": "Fashion Entrepreneur, Full-Stack Web Developer, UI/UX Designer & Brand Strategist based in Kampala, Uganda.",
   "start_url": "/",
@@ -8,7 +8,12 @@
   "orientation": "portrait-primary",
   "background_color": "#050505",
   "theme_color": "#050505",
-  "categories": ["portfolio", "business", "developer", "fashion"],
+  "categories": [
+    "portfolio",
+    "business",
+    "developer",
+    "fashion"
+  ],
   "icons": [
     {
       "src": "/assets/portfolio/logo.png",
@@ -24,9 +29,17 @@
     }
   ],
   "shortcuts": [
-    { "name": "Portfolio", "url": "/portfolio" },
-    { "name": "Services", "url": "/services" },
-    { "name": "Contact", "url": "/contact" }
+    {
+      "name": "Portfolio",
+      "url": "/portfolio"
+    },
+    {
+      "name": "Services",
+      "url": "/services"
+    },
+    {
+      "name": "Contact",
+      "url": "/contact"
+    }
   ]
 }
-
