@@ -136,37 +136,55 @@ export default function Contact() {
     }
 
     setSubmitting(true);
+    setSubmitted(false);
 
     try {
-      const subject = encodeURIComponent(
-        form.subject.trim() || "Project Inquiry"
-      );
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          subject: form.subject.trim(),
+          message: form.message.trim(),
+        }),
+      });
 
-      const body = encodeURIComponent(
-        [
-          `Name: ${form.name.trim()}`,
-          `Email: ${form.email.trim()}`,
-          "",
-          "Message:",
-          form.message.trim(),
-          "",
-          `Sent from: ${window.location.origin}`,
-        ].join("\n")
-      );
+      const result = await response
+        .json()
+        .catch(() => null);
 
-      const mailtoUrl = `mailto:${CONTACT.email}?subject=${subject}&body=${body}`;
-
-      window.location.href = mailtoUrl;
+      if (
+        !response.ok ||
+        !result ||
+        result.success !== true
+      ) {
+        throw new Error(
+          result?.error || "Unable to send message."
+        );
+      }
 
       setSubmitted(true);
-
-      setTimeout(() => {
-        setSubmitted(false);
-      }, 6000);
-
       setForm(initialForm);
+      setErrors({});
+
+      window.setTimeout(() => {
+        setSubmitted(false);
+      }, 7000);
     } catch (error) {
-      console.error("Unable to open email client:", error);
+      console.error(
+        "Contact form submission failed:",
+        error
+      );
+
+      setSubmitted(false);
+
+      setErrors({
+        form:
+          "We couldn't send your message right now. Please try again shortly or contact me directly.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -282,13 +300,32 @@ export default function Contact() {
 
                   <div>
                     <p className="text-sm font-medium text-alabaster">
-                      Your email draft has been opened.
+                      Message sent successfully.
                     </p>
 
                     <p className="mt-1 text-xs font-light leading-relaxed text-graphite">
-                      Review the message and send it from your email
-                      application. If nothing opened, use the email address
-                      shown in the contact information.
+                      Thank you for reaching out. Your message has been
+                      delivered successfully, and I'll get back to you as
+                      soon as possible.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {errors.form && (
+                <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
+                  <AlertCircle
+                    size={18}
+                    className="mt-0.5 flex-shrink-0 text-red-400"
+                  />
+
+                  <div>
+                    <p className="text-sm font-medium text-alabaster">
+                      Message not sent
+                    </p>
+
+                    <p className="mt-1 text-xs font-light leading-relaxed text-graphite">
+                      {errors.form}
                     </p>
                   </div>
                 </div>
@@ -429,7 +466,7 @@ export default function Contact() {
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-vapor px-8 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:bg-vapor/90 hover:shadow-lg hover:shadow-vapor/20 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {submitting ? (
-                    "Opening Email..."
+                    "Sending Message..."
                   ) : (
                     <>
                       <Send size={16} />
