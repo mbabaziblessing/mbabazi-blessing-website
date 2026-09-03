@@ -24,7 +24,6 @@ import Pricing from "@/components/portfolio/home/Pricing";
 import BookConsultation from "@/components/portfolio/home/BookConsultation";
 import FAQ from "@/components/portfolio/home/FAQ";
 import Resume from "@/components/portfolio/home/Resume";
-import Contact from "@/components/portfolio/home/Contact";
 import SocialMedia from "@/components/portfolio/home/SocialMedia";
 import Newsletter from "@/components/portfolio/home/Newsletter";
 
@@ -344,11 +343,65 @@ export default function Home() {
       </section>
 
       {/* =========================================================
-          CONTACT
+          CONTACT CTA
+          Homepage conversion-focused contact section.
+          Full contact details remain on /contact.
       ========================================================== */}
-      <section className="section-midnight relative">
-        <div className="pointer-events-none absolute right-0 top-1/3 h-[450px] w-[450px] rounded-full bg-vapor/[0.045] blur-[150px]" />
-        <Contact />
+      <section className="section-midnight relative overflow-hidden py-24">
+        <div className="pointer-events-none absolute right-0 top-1/4 h-[450px] w-[450px] rounded-full bg-vapor/[0.06] blur-[150px]" />
+        <div className="pointer-events-none absolute bottom-0 left-0 h-[300px] w-[300px] rounded-full bg-blue-500/[0.035] blur-[120px]" />
+
+        <div className="relative mx-auto max-w-4xl px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-vapor">
+              Get In Touch
+            </p>
+
+            <h2 className="font-heading text-3xl font-light text-alabaster sm:text-5xl">
+              Let's Build Something{" "}
+              <span className="gradient-text">Extraordinary</span>
+            </h2>
+
+            <p className="mx-auto mt-5 max-w-2xl text-sm font-light leading-relaxed text-graphite sm:text-base">
+              Have a website, AI, branding, e-commerce, or business project in
+              mind? Tell me what you're building and let's discuss how I can help
+              turn your idea into a practical digital solution.
+            </p>
+
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Ripple>
+                <Link
+                  to="/contact"
+                  className="flex items-center gap-2 rounded-xl bg-vapor px-6 py-3.5 text-sm font-medium text-white transition hover:bg-vapor/90 hover:shadow-lg hover:shadow-vapor/20"
+                >
+                  Start a Project
+                  <ArrowRight size={16} />
+                </Link>
+              </Ripple>
+
+              <Ripple>
+                <a
+                  href={CONTACT.whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-xl glass px-6 py-3.5 text-sm font-medium text-alabaster transition hover:bg-white/10"
+                >
+                  <WhatsAppIcon size={16} />
+                  WhatsApp Me
+                </a>
+              </Ripple>
+            </div>
+
+            <p className="mt-6 text-xs font-mono text-graphite/80">
+              Based in Uganda · Available worldwide remotely
+            </p>
+          </motion.div>
+        </div>
       </section>
 
       {/* =========================================================
