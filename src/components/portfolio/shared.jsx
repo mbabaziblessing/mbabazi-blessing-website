@@ -15,7 +15,7 @@ export const IMAGES = {
 export const CONTACT = {
   whatsapp: "256707333422",
   whatsappLink: "https://wa.me/256707333422",
-  email: "mbabaziblessing2002@gmail.com",
+  email: "hello@mbabaziblessing.com",
   phone: "+256 707 333 422",
   location: "Kampala, Uganda",
   calendly: "https://calendly.com/mbabaziblessing/",
