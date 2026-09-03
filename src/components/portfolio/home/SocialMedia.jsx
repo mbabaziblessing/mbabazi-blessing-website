@@ -8,14 +8,18 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { SOCIALS, WhatsAppIcon } from "@/components/portfolio/shared";
+import {
+  CONTACT,
+  SOCIALS,
+  WhatsAppIcon,
+} from "@/components/portfolio/shared";
 
 const platforms = [
   {
     name: "WhatsApp",
     icon: WhatsAppIcon,
     desc: "Quick communication, customer support, consultations, and project enquiries.",
-    url: SOCIALS.whatsappLink,
+    url: CONTACT.whatsappLink,
     primary: true,
     numbers: ["+256 707 333 422", "+256 776 994 892"],
   },
@@ -255,7 +259,7 @@ export default function SocialMedia() {
             </a>
 
             <a
-              href={SOCIALS.whatsappLink}
+              href={CONTACT.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-xl glass px-6 py-3 text-sm font-medium text-alabaster transition hover:bg-white/10"
