@@ -377,11 +377,15 @@ export default function Contact() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block text-xs font-light text-graphite">
+                  <label
+                    htmlFor="contact-service"
+                    className="mb-1.5 block text-xs font-light text-graphite"
+                  >
                     Service Interested In
                   </label>
 
                   <select
+                    id="contact-service"
                     name="service"
                     value={form.service}
                     onChange={handleChange}
