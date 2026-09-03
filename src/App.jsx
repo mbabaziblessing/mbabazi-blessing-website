@@ -9,6 +9,8 @@ import {
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
+const BlessAI = lazy(() => import("./components/BlessAI"));
+
 // Lazy-loaded pages
 const Home = lazy(() => import("./pages/Home"));
 
@@ -129,6 +131,10 @@ export default function App() {
         </main>
 
         <Footer />
+
+        <Suspense fallback={null}>
+          <BlessAI />
+        </Suspense>
       </div>
     </BrowserRouter>
   );
