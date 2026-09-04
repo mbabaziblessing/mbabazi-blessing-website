@@ -31,7 +31,11 @@ function jsonResponse(body, status, origin) {
   });
 }
 
-function errorResponse(status, origin, message = "Unable to process the request.") {
+function errorResponse(
+  status,
+  origin,
+  message = "Unable to process the request."
+) {
   return jsonResponse({ error: message }, status, origin);
 }
 
@@ -60,7 +64,7 @@ function validateBody(body) {
   const subject = normalizeText(body.subject);
   const message = normalizeText(body.message);
 
-  if (!name || name.length > MAX_NAME_LENGTH || name.length < 2) {
+  if (!name || name.length < 2 || name.length > MAX_NAME_LENGTH) {
     return { valid: false };
   }
 
@@ -96,35 +100,14 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-async function sendEmail(data, apiKey) {
-  const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#222">
-      <h2>New website enquiry</h2>
-      <p><strong>Name:</strong> ${escapeHtml(data.name)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
-      <p><strong>Subject:</strong> ${escapeHtml(data.subject)}</p>
-      <p><strong>Message:</strong></p>
-      <p style="white-space:pre-wrap">${escapeHtml(data.message)}</p>
-      <hr />
-      <p style="font-size:12px;color:#666">
-        Sent from https://mbabaziblessing.com
-      </p>
-    </div>
-  `;
-
-  const text = [
-    "New website enquiry",
-    "",
-    `Name: ${data.name}`,
-    `Email: ${data.email}`,
-    `Subject: ${data.subject}`,
-    "",
-    "Message:",
-    data.message,
-    "",
-    "Sent from: https://mbabaziblessing.com",
-  ].join("\n");
-
+async function sendResendEmail({
+  to,
+  replyTo,
+  subject,
+  html,
+  text,
+  apiKey,
+}) {
   const response = await fetch(RESEND_ENDPOINT, {
     method: "POST",
     headers: {
@@ -133,9 +116,9 @@ async function sendEmail(data, apiKey) {
     },
     body: JSON.stringify({
       from: FROM_EMAIL,
-      to: [TO_EMAIL],
-      reply_to: data.email,
-      subject: `Website enquiry: ${data.subject}`,
+      to: [to],
+      reply_to: replyTo,
+      subject,
       text,
       html,
     }),
@@ -153,14 +136,162 @@ async function sendEmail(data, apiKey) {
   return result;
 }
 
+function buildOwnerNotification(data) {
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#222;max-width:680px;margin:0 auto">
+      <h2 style="margin-bottom:24px">New website enquiry</h2>
+
+      <p><strong>Name:</strong> ${escapeHtml(data.name)}</p>
+
+      <p>
+        <strong>Email:</strong>
+        <a href="mailto:${escapeHtml(data.email)}">
+          ${escapeHtml(data.email)}
+        </a>
+      </p>
+
+      <p><strong>Subject:</strong> ${escapeHtml(data.subject)}</p>
+
+      <p><strong>Message:</strong></p>
+
+      <div style="padding:16px;background:#f6f6f6;border-radius:8px;white-space:pre-wrap">
+        ${escapeHtml(data.message)}
+      </div>
+
+      <hr style="margin:28px 0;border:0;border-top:1px solid #ddd">
+
+      <p style="font-size:12px;color:#666">
+        This enquiry was submitted through
+        <a href="https://mbabaziblessing.com">
+          mbabaziblessing.com
+        </a>.
+      </p>
+    </div>
+  `;
+
+  const text = [
+    "NEW WEBSITE ENQUIRY",
+    "",
+    `Name: ${data.name}`,
+    `Email: ${data.email}`,
+    `Subject: ${data.subject}`,
+    "",
+    "Message:",
+    data.message,
+    "",
+    "Submitted through: https://mbabaziblessing.com",
+  ].join("\n");
+
+  return {
+    subject: `Website enquiry: ${data.subject}`,
+    html,
+    text,
+  };
+}
+
+function buildVisitorConfirmation(data) {
+  const safeName = escapeHtml(data.name);
+  const safeSubject = escapeHtml(data.subject);
+  const safeMessage = escapeHtml(data.message);
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#222;max-width:680px;margin:0 auto">
+
+      <div style="padding:24px 0">
+        <h2 style="margin:0 0 20px">
+          Thank you for contacting Mbabazi Blessing
+        </h2>
+
+        <p>Hello ${safeName},</p>
+
+        <p>
+          Thank you for reaching out through my website.
+          I have received your enquiry and will review the details
+          and get back to you shortly.
+        </p>
+
+        <div style="margin:24px 0;padding:18px;background:#f6f6f6;border-radius:8px">
+          <p style="margin:0 0 10px">
+            <strong>Your enquiry:</strong>
+          </p>
+
+          <p style="margin:6px 0">
+            <strong>Subject:</strong> ${safeSubject}
+          </p>
+
+          <p style="margin:6px 0">
+            <strong>Message:</strong>
+          </p>
+
+          <p style="margin:6px 0;white-space:pre-wrap">
+            ${safeMessage}
+          </p>
+        </div>
+
+        <p>
+          If you have additional information to share, simply reply
+          to this email.
+        </p>
+
+        <p>
+          Best regards,<br>
+          <strong>Mbabazi Blessing</strong><br>
+          Web Developer & Digital Solutions
+        </p>
+
+        <p>
+          <a href="https://mbabaziblessing.com">
+            mbabaziblessing.com
+          </a>
+        </p>
+      </div>
+
+    </div>
+  `;
+
+  const text = [
+    "THANK YOU FOR CONTACTING MBABAZI BLESSING",
+    "",
+    `Hello ${data.name},`,
+    "",
+    "Thank you for reaching out through my website.",
+    "I have received your enquiry and will review the details and get back to you shortly.",
+    "",
+    "YOUR ENQUIRY",
+    `Subject: ${data.subject}`,
+    "",
+    "Message:",
+    data.message,
+    "",
+    "If you have additional information to share, simply reply to this email.",
+    "",
+    "Best regards,",
+    "Mbabazi Blessing",
+    "Web Developer & Digital Solutions",
+    "https://mbabaziblessing.com",
+  ].join("\n");
+
+  return {
+    subject: "We received your enquiry — Mbabazi Blessing",
+    html,
+    text,
+  };
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
   const origin = request.headers.get("Origin");
 
+  /*
+   * Only allow requests originating from the production website.
+   */
   if (origin && origin !== PRODUCTION_ORIGIN) {
     return errorResponse(403, origin);
   }
 
+  /*
+   * Only POST requests are accepted.
+   */
   if (request.method !== "POST") {
     return errorResponse(405, origin);
   }
@@ -176,33 +307,72 @@ export async function onRequest(context) {
   const validation = validateBody(body);
 
   if (!validation.valid) {
-    return errorResponse(400, origin, "Please provide valid contact details.");
+    return errorResponse(
+      400,
+      origin,
+      "Please provide valid contact details."
+    );
   }
 
   const apiKey = env?.RESEND_API_KEY;
 
   if (!apiKey) {
     console.error("RESEND_API_KEY is not configured.");
-    return errorResponse(503, origin);
+
+    return errorResponse(
+      503,
+      origin,
+      "Email service is temporarily unavailable."
+    );
   }
 
-  try {
-    const result = await sendEmail(validation.data, apiKey);
+  const data = validation.data;
 
-    return jsonResponse(
-      {
-        success: true,
-        message: "Your message has been sent successfully.",
-        id: result?.id || null,
-      },
-      200,
-      origin
-    );
-  } catch (error) {
+  const ownerEmail = buildOwnerNotification(data);
+  const visitorEmail = buildVisitorConfirmation(data);
+
+  /*
+   * Send both emails.
+   *
+   * OWNER:
+   * From: hello@mbabaziblessing.com
+   * To: hello@mbabaziblessing.com
+   * Reply-To: visitor's email
+   *
+   * VISITOR:
+   * From: hello@mbabaziblessing.com
+   * To: visitor's email
+   * Reply-To: hello@mbabaziblessing.com
+   */
+  const [ownerResult, visitorResult] = await Promise.allSettled([
+    sendResendEmail({
+      to: TO_EMAIL,
+      replyTo: data.email,
+      subject: ownerEmail.subject,
+      html: ownerEmail.html,
+      text: ownerEmail.text,
+      apiKey,
+    }),
+
+    sendResendEmail({
+      to: data.email,
+      replyTo: TO_EMAIL,
+      subject: visitorEmail.subject,
+      html: visitorEmail.html,
+      text: visitorEmail.text,
+      apiKey,
+    }),
+  ]);
+
+  /*
+   * The owner notification is the critical email.
+   * If it fails, report an error to the website.
+   */
+  if (ownerResult.status === "rejected") {
     console.error(
-      "Contact email provider error:",
-      error?.providerStatus || "",
-      error?.providerBody || ""
+      "Owner notification failed:",
+      ownerResult.reason?.providerStatus || "",
+      ownerResult.reason?.providerBody || ""
     );
 
     return errorResponse(
@@ -211,4 +381,30 @@ export async function onRequest(context) {
       "We couldn't send your message right now. Please try again shortly or contact us directly."
     );
   }
+
+  /*
+   * The visitor confirmation is helpful but should not make
+   * a successful enquiry appear to have failed.
+   */
+  if (visitorResult.status === "rejected") {
+    console.error(
+      "Visitor confirmation failed:",
+      visitorResult.reason?.providerStatus || "",
+      visitorResult.reason?.providerBody || ""
+    );
+  }
+
+  return jsonResponse(
+    {
+      success: true,
+      message: "Your message has been sent successfully.",
+      id:
+        ownerResult.status === "fulfilled"
+          ? ownerResult.value?.id || null
+          : null,
+      confirmationSent: visitorResult.status === "fulfilled",
+    },
+    200,
+    origin
+  );
 }
