@@ -27,6 +27,7 @@ const FAQ = lazy(() => import("./pages/FAQ"));
 const Contact = lazy(() => import("./pages/Contact"));
 
 const Portfolio = lazy(() => import("./pages/Portfolio"));
+const PortfolioProject = lazy(() => import("./pages/PortfolioProject"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const CaseStudyDetail = lazy(() => import("./pages/CaseStudyDetail"));
 
@@ -90,6 +91,10 @@ export default function App() {
 
               {/* Portfolio */}
               <Route path="/portfolio" element={<Portfolio />} />
+              <Route
+                path="/portfolio/:slug"
+                element={<PortfolioProject />}
+              />
               <Route path="/case-studies" element={<CaseStudies />} />
               <Route
                 path="/case-studies/:slug"

@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import {
   WhatsAppIcon,
+  SocialIcon,
 } from "./portfolio/shared";
 import { CONTACT, SOCIALS } from "@/config/site";
 
@@ -32,27 +33,27 @@ const socials = [
   {
     label: "Facebook",
     href: SOCIALS.facebook,
-    mark: "f",
+    icon: "facebook",
   },
   {
     label: "Instagram",
     href: SOCIALS.instagram,
-    mark: "?",
+    icon: "instagram",
   },
   {
     label: "LinkedIn",
     href: SOCIALS.linkedin,
-    mark: "in",
+    icon: "linkedin",
   },
   {
     label: "X",
     href: SOCIALS.twitter,
-    mark: "??",
+    icon: "x",
   },
   {
     label: "TikTok",
     href: SOCIALS.tiktok,
-    mark: "?",
+    icon: "tiktok",
   },
 ];
 
@@ -177,7 +178,7 @@ export default function Footer() {
                   aria-label={social.label}
                   className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-xs font-bold text-graphite transition hover:border-vapor/30 hover:bg-vapor/10 hover:text-vapor"
                 >
-                  {social.mark}
+                  <SocialIcon name={social.icon} size={17} />
                 </a>
               ))}
             </div>
@@ -187,7 +188,7 @@ export default function Footer() {
         <div className="mt-14 border-t border-white/10 pt-6">
           <div className="flex flex-col gap-5 text-xs text-graphite sm:flex-row sm:items-center sm:justify-between">
             <p>
-              � {currentYear} Mbabazi Blessing. All rights reserved.
+              Copyright {currentYear} Mbabazi Blessing. All rights reserved.
             </p>
 
             <div className="flex flex-wrap items-center gap-5">

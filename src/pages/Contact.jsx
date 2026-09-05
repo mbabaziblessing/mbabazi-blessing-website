@@ -13,18 +13,18 @@ import {
 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { CONTACT, SOCIALS } from "@/config/site";
-import { WhatsAppIcon } from "@/components/portfolio/shared";
+import { SocialIcon, WhatsAppIcon } from "@/components/portfolio/shared";
 import { openWhatsApp, WhatsAppMessages } from "@/lib/whatsapp";
 import PageHero from "@/components/portfolio/PageHero";
 
 const businessHours = [
   {
-    day: "Monday � Friday",
-    hours: "9:00 AM � 6:00 PM",
+    day: "Monday - Friday",
+    hours: "9:00 AM - 6:00 PM",
   },
   {
     day: "Saturday",
-    hours: "10:00 AM � 4:00 PM",
+    hours: "10:00 AM - 4:00 PM",
   },
   {
     day: "Sunday",
@@ -36,26 +36,32 @@ const socials = [
   {
     label: "LinkedIn",
     href: SOCIALS.linkedin,
+    icon: "linkedin",
   },
   {
     label: "Facebook",
     href: SOCIALS.facebook,
+    icon: "facebook",
   },
   {
     label: "Instagram",
     href: SOCIALS.instagram,
+    icon: "instagram",
   },
   {
     label: "X (Twitter)",
     href: SOCIALS.twitter,
+    icon: "x",
   },
   {
     label: "TikTok",
     href: SOCIALS.tiktok,
+    icon: "tiktok",
   },
   {
     label: "Medium",
     href: SOCIALS.medium,
+    icon: "medium",
   },
 ];
 
@@ -505,8 +511,8 @@ export default function Contact() {
                     </h4>
 
                     <p className="mt-1 text-xs font-light leading-relaxed text-graphite">
-                      Fashion Entrepreneur � Full-Stack Web Developer � UI/UX
-                      Designer � Brand Strategist � AI Solutions Developer
+                      Fashion Entrepreneur - Full-Stack Web Developer - UI/UX
+                      Designer - Brand Strategist - AI Solutions Developer
                     </p>
 
                     <p className="mt-2 flex items-center gap-1.5 text-xs font-light text-graphite/70">
@@ -514,7 +520,7 @@ export default function Contact() {
                         size={11}
                         className="text-vapor"
                       />
-                      Uganda � Available worldwide remotely
+                      Uganda - Available worldwide remotely
                     </p>
                   </div>
                 </div>
@@ -679,7 +685,8 @@ export default function Contact() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-xl glass px-4 py-2.5 text-sm text-graphite transition hover:border-vapor/20 hover:bg-vapor/10 hover:text-alabaster"
                     >
-                      {social.label}
+                      <SocialIcon name={social.icon} size={16} />
+                      <span>{social.label}</span>
                       <ExternalLink
                         size={11}
                         className="text-graphite/50"
