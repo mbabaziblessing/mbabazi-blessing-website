@@ -1,12 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search, Globe, Palette, Briefcase, Bot, ShoppingCart, Megaphone, ArrowRight, Wrench,
   Download, Clock, BookOpen, FileText, Sparkles, Calculator, Lock, QrCode, Image as ImageIcon, Ruler, Check,
 } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { CONTACT } from '@/components/portfolio/shared';
+import { CONTACT } from '@/config/site';
 
 const categories = [
   { key: 'web', icon: Globe, title: 'Website Development', items: ['Website Planning Checklist', 'Website Requirements Template', 'Website Launch Checklist', 'Responsive Design Guide', 'Website Maintenance Checklist'] },

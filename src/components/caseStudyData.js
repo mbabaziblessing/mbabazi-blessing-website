@@ -1,4 +1,4 @@
-﻿import { IMAGES } from "@/components/portfolio/shared";
+﻿import { IMAGES } from "@/config/site";
 
 export const caseStudies = [
   {

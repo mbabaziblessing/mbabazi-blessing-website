@@ -1,8 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Download, Mail, Phone, MapPin, GraduationCap, Briefcase, Award } from 'lucide-react';
 import PageHero from '@/components/portfolio/PageHero';
-import { CONTACT } from '@/components/portfolio/shared';
+import { CONTACT } from '@/config/site';
 
 const experience = [
   { role: 'Founder & Creative Director', company: 'Bless Fashion House', period: '2021 — Present', desc: 'Leading a Ugandan fashion brand offering bespoke tailoring, ready-to-wear collections, and corporate uniforms. Managing design, production, and e-commerce operations.' },

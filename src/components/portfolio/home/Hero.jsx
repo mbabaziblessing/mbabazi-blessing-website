@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Code, Cpu, Sparkles, Palette, Rocket, Brain, ArrowDown,
   Eye, Briefcase, Calendar, Download, MapPin,
 } from 'lucide-react';
-import { IMAGES } from '@/components/portfolio/shared';
 import MagneticButton from '@/components/portfolio/MagneticButton';
 
 const stats = [
@@ -52,8 +51,10 @@ function useTypewriter(words, { typeSpeed = 90, deleteSpeed = 40, pause = 1600 }
     if (!deleting && text === current) {
       timeout = setTimeout(() => setDeleting(true), pause);
     } else if (deleting && text === '') {
-      setDeleting(false);
-      setIndex((i) => (i + 1) % words.length);
+      timeout = setTimeout(() => {
+        setDeleting(false);
+        setIndex((i) => (i + 1) % words.length);
+      }, 0);
     } else {
       timeout = setTimeout(() => {
         setText((prev) =>

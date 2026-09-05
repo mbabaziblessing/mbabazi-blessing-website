@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { X, ChevronLeft, ChevronRight, ArrowRight, Sparkles } from 'lucide-react';
 import PageHero from '@/components/portfolio/PageHero';
-import { IMAGES, CONTACT, WhatsAppIcon } from '@/components/portfolio/shared';
+import { IMAGES, CONTACT } from '@/config/site';
+import { WhatsAppIcon } from '@/components/portfolio/shared';
 
 const looks = [
   { src: IMAGES.portrait, title: 'Royal Heritage Gown', category: 'Evening Wear', tall: true },

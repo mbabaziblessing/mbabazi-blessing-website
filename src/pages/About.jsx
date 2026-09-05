@@ -1,9 +1,8 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Code2, Palette, ShoppingBag, TrendingUp, Globe, Zap, Scissors, Users, Target, Eye, Heart } from 'lucide-react';
 import { useScrollAnimation, useCountUp } from '@/hooks/useScrollAnimation';
-import { IMAGES } from '@/components/portfolio/shared';
+import { IMAGES } from '@/config/site';
 import PageHero from '@/components/portfolio/PageHero';
 import HomeResources from '@/components/portfolio/home/Resources';
 
@@ -52,8 +51,6 @@ function StatCard({ stat }) {
 }
 
 export default function About() {
-  const [ref, isVisible] = useScrollAnimation();
-
   return (
     <>
       <PageHero

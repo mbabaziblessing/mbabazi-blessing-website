@@ -1,7 +1,4 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { IMAGES } from '@/components/portfolio/shared';
 import PageHero from '@/components/portfolio/PageHero';
 
 const experiences = [
@@ -33,8 +30,6 @@ const experiences = [
 ];
 
 export default function Experience() {
-  const [ref, isVisible] = useScrollAnimation();
-
   return (
     <>
       <PageHero

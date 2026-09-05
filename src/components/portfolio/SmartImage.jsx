@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 /**
  * Optimized image: lazy-loads, prevents layout shift via aspect ratio,

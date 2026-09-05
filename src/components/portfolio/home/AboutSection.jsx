@@ -1,11 +1,10 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   Code, Palette, ShoppingBag, Sparkles, Search, Bot,
   Briefcase, TrendingUp, Megaphone, Layers, Target,
 } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { IMAGES } from '@/components/portfolio/shared';
+import { IMAGES } from '@/config/site';
 
 const whatIDo = [
   { icon: Code, label: 'Full-Stack Website Development' },

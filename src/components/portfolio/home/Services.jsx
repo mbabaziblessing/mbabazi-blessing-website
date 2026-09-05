@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -6,7 +5,7 @@ import {
   Check, ArrowRight, Sparkles, ShieldCheck,
 } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { CONTACT } from '@/components/portfolio/shared';
+import { CONTACT } from '@/config/site';
 
 const services = [
   { icon: Globe, name: 'Website Design & Development', category: 'Web Development', desc: 'Design and development of modern, responsive, secure, and high-performance websites for businesses, startups, organizations, and personal brands.', includes: ['Business Websites', 'Corporate Websites', 'Portfolio Websites', 'Landing Pages', 'Custom Websites', 'Responsive Design', 'Website Maintenance'] },

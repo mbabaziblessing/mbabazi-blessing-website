@@ -1,5 +1,5 @@
-﻿import React, { useEffect, useRef } from 'react';
-import { CONTACT } from "@/components/portfolio/shared";
+import { useEffect, useRef } from 'react';
+import { CONTACT } from "@/config/site";
 export default function CalendlyEmbed({ url = CONTACT.calendly, height = 720 }) {
   const ref = useRef(null);
 

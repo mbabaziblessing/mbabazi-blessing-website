@@ -1,12 +1,11 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Download, FileText, Globe, MapPin, Clock, Check, ArrowRight, User, Target, Code,
+  Download, FileText, MapPin, Clock, ArrowRight, User, Target, Code,
   Briefcase, Rocket, Wrench, GraduationCap, Award, Trophy, Languages, Cpu, Phone, Users, Sparkles,
 } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { IMAGES, CONTACT } from '@/components/portfolio/shared';
+import { IMAGES, CONTACT } from '@/config/site';
 
 const expertise = ['Website Development', 'UI/UX Design', 'Artificial Intelligence', 'E-commerce Solutions', 'Branding', 'Business Strategy', 'Digital Marketing', 'SEO', 'Software Development', 'Fashion Entrepreneurship'];
 

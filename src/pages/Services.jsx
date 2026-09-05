@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -16,7 +16,6 @@ import {
   ArrowUpRight,
   ChevronDown
 } from "lucide-react";
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import PageHero from '@/components/portfolio/PageHero';
 import PricingTable from '@/components/portfolio/PricingTable';
 import ConsultationPackages from '@/components/portfolio/ConsultationPackages';
@@ -68,13 +67,11 @@ function FAQItem({ q, a, i }) {
 }
 
 export default function Services() {
-  const [ref, isVisible] = useScrollAnimation();
-
   return (
     <>
       <PageHero
         title="Services"
-        subtitle="Premium services spanning web development, design, branding, and fashion consulting â€” tailored to elevate your brand."
+        subtitle="Premium services spanning web development, design, branding, and fashion consulting — tailored to elevate your brand."
         breadcrumb={[{ label: 'Home', path: '/' }, { label: 'Services' }]}
       />
 
@@ -156,7 +153,7 @@ export default function Services() {
           </div>
           <div className="text-center mt-10">
             <Link to="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-vapor text-white rounded-xl font-medium text-sm hover:bg-vapor/90 transition">
-              Start a Project â†’
+              Start a Project →
             </Link>
           </div>
         </div>

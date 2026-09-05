@@ -1,4 +1,3 @@
-﻿import React from "react";
 import { Link } from "react-router-dom";
 import {
   Mail,
@@ -6,10 +5,9 @@ import {
   Phone,
 } from "lucide-react";
 import {
-  CONTACT,
-  SOCIALS,
   WhatsAppIcon,
 } from "./portfolio/shared";
+import { CONTACT, SOCIALS } from "@/config/site";
 
 const footerLinks = {
   Explore: [
@@ -39,7 +37,7 @@ const socials = [
   {
     label: "Instagram",
     href: SOCIALS.instagram,
-    mark: "◎",
+    mark: "?",
   },
   {
     label: "LinkedIn",
@@ -49,12 +47,12 @@ const socials = [
   {
     label: "X",
     href: SOCIALS.twitter,
-    mark: "𝕏",
+    mark: "??",
   },
   {
     label: "TikTok",
     href: SOCIALS.tiktok,
-    mark: "♪",
+    mark: "?",
   },
 ];
 
@@ -189,7 +187,7 @@ export default function Footer() {
         <div className="mt-14 border-t border-white/10 pt-6">
           <div className="flex flex-col gap-5 text-xs text-graphite sm:flex-row sm:items-center sm:justify-between">
             <p>
-              © {currentYear} Mbabazi Blessing. All rights reserved.
+              � {currentYear} Mbabazi Blessing. All rights reserved.
             </p>
 
             <div className="flex flex-wrap items-center gap-5">

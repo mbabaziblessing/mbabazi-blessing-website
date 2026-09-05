@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ArrowUpRight, Clock, ArrowLeft } from 'lucide-react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { motion } from 'framer-motion';
+import { Search, ArrowUpRight, Clock } from 'lucide-react';
 import { blogPosts, blogCategories } from '@/components/portfolio/blogData';
 import PageHero from '@/components/portfolio/PageHero';
 import HomeBlog from '@/components/portfolio/home/Blog';
 
 export default function Blog() {
-  const [ref, isVisible] = useScrollAnimation();
   const [search, setSearch] = useState('');
   const [activeCat, setActiveCat] = useState('All');
 

@@ -1,7 +1,5 @@
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, ArrowUpRight } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { blogPosts } from '@/components/portfolio/blogData';
 import PageHero from '@/components/portfolio/PageHero';

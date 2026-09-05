@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 export default function Ripple({ children, className = '', color = 'rgba(255,255,255,0.35)' }) {
   const [ripples, setRipples] = useState([]);

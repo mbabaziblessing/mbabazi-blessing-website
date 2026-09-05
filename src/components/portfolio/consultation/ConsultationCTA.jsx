@@ -1,7 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, ArrowRight } from 'lucide-react';
-import { CONTACT } from '../shared';
+import { CONTACT } from '@/config/site';
 
 export default function ConsultationCTA() {
   return (

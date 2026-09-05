@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Send,
@@ -12,22 +12,19 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import {
-  CONTACT,
-  SOCIALS,
-  WhatsAppIcon,
-} from "@/components/portfolio/shared";
+import { CONTACT, SOCIALS } from "@/config/site";
+import { WhatsAppIcon } from "@/components/portfolio/shared";
 import { openWhatsApp, WhatsAppMessages } from "@/lib/whatsapp";
 import PageHero from "@/components/portfolio/PageHero";
 
 const businessHours = [
   {
-    day: "Monday – Friday",
-    hours: "9:00 AM – 6:00 PM",
+    day: "Monday � Friday",
+    hours: "9:00 AM � 6:00 PM",
   },
   {
     day: "Saturday",
-    hours: "10:00 AM – 4:00 PM",
+    hours: "10:00 AM � 4:00 PM",
   },
   {
     day: "Sunday",
@@ -508,8 +505,8 @@ export default function Contact() {
                     </h4>
 
                     <p className="mt-1 text-xs font-light leading-relaxed text-graphite">
-                      Fashion Entrepreneur · Full-Stack Web Developer · UI/UX
-                      Designer · Brand Strategist · AI Solutions Developer
+                      Fashion Entrepreneur � Full-Stack Web Developer � UI/UX
+                      Designer � Brand Strategist � AI Solutions Developer
                     </p>
 
                     <p className="mt-2 flex items-center gap-1.5 text-xs font-light text-graphite/70">
@@ -517,7 +514,7 @@ export default function Contact() {
                         size={11}
                         className="text-vapor"
                       />
-                      Uganda · Available worldwide remotely
+                      Uganda � Available worldwide remotely
                     </p>
                   </div>
                 </div>

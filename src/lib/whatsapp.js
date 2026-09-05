@@ -1,4 +1,4 @@
-﻿import { CONTACT } from "@/components/portfolio/shared";
+﻿import { CONTACT } from "@/config/site";
 
 /**
  * Central WhatsApp helper.

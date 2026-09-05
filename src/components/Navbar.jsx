@@ -7,9 +7,9 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import {
-  CONTACT,
   WhatsAppIcon,
 } from "./portfolio/shared";
+import { CONTACT } from "@/config/site";
 
 const navGroups = [
   {
@@ -82,14 +82,16 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false);
-    setOpenDropdown(null);
-
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
   }, [location.pathname]);
+
+  const closeNavigation = () => {
+    setMobileOpen(false);
+    setOpenDropdown(null);
+  };
 
   const isActive = (path) => {
     if (path === "/") {
@@ -123,6 +125,7 @@ export default function Navbar() {
           {/* Brand */}
           <Link
             to="/"
+            onClick={closeNavigation}
             className="group flex min-w-0 items-center gap-3"
             aria-label="Mbabazi Blessing home"
           >
@@ -194,6 +197,7 @@ export default function Navbar() {
                           <Link
                             key={child.path}
                             to={child.path}
+                            onClick={closeNavigation}
                             className={`flex items-center justify-between rounded-xl px-4 py-2.5 text-sm transition ${
                               isActive(child.path)
                                 ? "bg-vapor/10 text-vapor"
@@ -213,6 +217,7 @@ export default function Navbar() {
                 <Link
                   key={item.path}
                   to={item.path}
+                  onClick={closeNavigation}
                   className={`rounded-xl px-3 py-2 text-sm font-medium transition ${
                     isGroupActive(item)
                       ? "bg-vapor/15 text-white"
@@ -331,6 +336,7 @@ export default function Navbar() {
                               <Link
                                 key={child.path}
                                 to={child.path}
+                                onClick={closeNavigation}
                                 className={`flex items-center justify-between rounded-xl px-4 py-2.5 text-sm transition ${
                                   isActive(child.path)
                                     ? "text-vapor"
@@ -351,6 +357,7 @@ export default function Navbar() {
                     <Link
                       key={item.path}
                       to={item.path}
+                      onClick={closeNavigation}
                       className={`flex items-center justify-between rounded-xl px-4 py-3 text-base transition ${
                         isGroupActive(item)
                           ? "bg-vapor/15 text-white"

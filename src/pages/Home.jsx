@@ -1,13 +1,9 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Star, Quote } from "lucide-react";
 
-import {
-  IMAGES,
-  CONTACT,
-  WhatsAppIcon,
-} from "@/components/portfolio/shared";
+import { IMAGES, CONTACT } from "@/config/site";
+import { WhatsAppIcon } from "@/components/portfolio/shared";
 
 import TrustedBy from "@/components/portfolio/TrustedBy";
 import TiltCard from "@/components/portfolio/TiltCard";

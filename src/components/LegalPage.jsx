@@ -1,4 +1,3 @@
-import React from 'react';
 import PageHero from '@/components/portfolio/PageHero';
 
 export default function LegalPage({ title, subtitle, breadcrumb, sections }) {

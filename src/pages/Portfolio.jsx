@@ -1,8 +1,7 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, X, ArrowLeft, ArrowRight, ZoomIn } from 'lucide-react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { IMAGES } from '@/components/portfolio/shared';
+import { IMAGES } from '@/config/site';
 import PageHero from '@/components/portfolio/PageHero';
 
 const filters = ['All', 'Websites', 'UI/UX', 'Branding', 'Fashion', 'Graphics'];
@@ -28,7 +27,6 @@ const galleryItems = [
 ];
 
 export default function Portfolio() {
-  const [ref, isVisible] = useScrollAnimation();
   const [active, setActive] = useState('All');
   const [selectedProject, setSelectedProject] = useState(null);
   const [lightbox, setLightbox] = useState(null);
@@ -55,7 +53,7 @@ export default function Portfolio() {
     <>
       <PageHero
         title="Portfolio"
-        subtitle="A curated selection of projects spanning web development, design, branding, and fashion â€” each crafted with intention."
+        subtitle="A curated selection of projects spanning web development, design, branding, and fashion — each crafted with intention."
         breadcrumb={[{ label: 'Home', path: '/' }, { label: 'Portfolio' }]}
       />
 
@@ -91,7 +89,7 @@ export default function Portfolio() {
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {project.tech.map((t) => <span key={t} className="px-2 py-0.5 rounded-md bg-white/5 text-graphite text-[11px] font-mono">{t}</span>)}
                     </div>
-                    <button onClick={() => setSelectedProject(project)} className="text-vapor text-sm font-medium hover:gap-2 flex items-center gap-1 transition-all">View Case Study â†’</button>
+                    <button onClick={() => setSelectedProject(project)} className="text-vapor text-sm font-medium hover:gap-2 flex items-center gap-1 transition-all">View Case Study →</button>
                   </div>
                 </motion.div>
               ))}

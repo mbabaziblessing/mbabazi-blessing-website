@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Check, Bell, Shield, AlertCircle, Users, FileText, Share2, ArrowRight } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const benefits = ['Website Development Tips', 'Artificial Intelligence Updates', 'UI/UX Design Insights', 'Business Growth Strategies', 'Branding Advice', 'Digital Marketing Guides', 'SEO Best Practices', 'E-commerce Tutorials', 'Fashion Business Updates', 'Project Announcements', 'Free Resources', 'Exclusive Templates', 'Portfolio Updates', 'Technology News'];
-const subscriberBenefits = ['Exclusive articles', 'Early access to new projects', 'Free downloadable resources', 'Professional templates', 'AI and technology updates', 'Business growth insights', 'Portfolio news', 'Invitations to future webinars and workshops'];
 const frequency = ['Monthly Newsletter', 'Important Project Announcements', 'New Blog Articles', 'Major Product Releases'];
 
 export default function Newsletter() {

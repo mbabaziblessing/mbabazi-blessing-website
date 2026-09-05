@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Phone,
@@ -13,11 +13,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import {
-  CONTACT,
-  SOCIALS,
-  WhatsAppIcon,
-} from "@/components/portfolio/shared";
+import { CONTACT, SOCIALS } from "@/config/site";
+import { WhatsAppIcon } from "@/components/portfolio/shared";
 import { openWhatsApp, WhatsAppMessages } from "@/lib/whatsapp";
 
 const serviceOptions = [
@@ -40,7 +37,7 @@ const socialLinks = [
     url: SOCIALS.facebook,
   },
   {
-    icon: () => <span className="text-xs font-bold">◎</span>,
+    icon: () => <span className="text-xs font-bold">?</span>,
     label: "Instagram",
     url: SOCIALS.instagram,
   },
@@ -55,20 +52,20 @@ const socialLinks = [
     url: SOCIALS.tiktok,
   },
   {
-    icon: () => <span className="text-xs font-bold">▶</span>,
+    icon: () => <span className="text-xs font-bold">?</span>,
     label: "YouTube",
     url: "https://youtube.com/@mbabaziblessing",
   },
   {
-    icon: () => <span className="text-xs font-bold">𝕏</span>,
+    icon: () => <span className="text-xs font-bold">??</span>,
     label: "X (Twitter)",
     url: SOCIALS.twitter,
   },
 ];
 
 const hours = [
-  { day: "Monday – Friday", time: "8:00 AM – 6:00 PM (EAT)" },
-  { day: "Saturday", time: "9:00 AM – 4:00 PM (EAT)" },
+  { day: "Monday � Friday", time: "8:00 AM � 6:00 PM (EAT)" },
+  { day: "Saturday", time: "9:00 AM � 4:00 PM (EAT)" },
   { day: "Sunday", time: "Closed" },
 ];
 
@@ -178,8 +175,8 @@ export default function Contact() {
         [
           `Name: ${form.name.trim()}`,
           `Email: ${form.email.trim()}`,
-          `Phone: ${form.phone.trim() || "—"}`,
-          `Company: ${form.company.trim() || "—"}`,
+          `Phone: ${form.phone.trim() || "�"}`,
+          `Company: ${form.company.trim() || "�"}`,
           `Service: ${form.service || service}`,
           "",
           detailsParts.join("\n\n"),

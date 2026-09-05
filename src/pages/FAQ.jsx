@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronDown, MessageCircle, ArrowRight } from 'lucide-react';
 import PageHero from '@/components/portfolio/PageHero';
-import { CONTACT, WhatsAppIcon } from '@/components/portfolio/shared';
+import { CONTACT } from '@/config/site';
+import { WhatsAppIcon } from '@/components/portfolio/shared';
 
 const faqGroups = [
   {

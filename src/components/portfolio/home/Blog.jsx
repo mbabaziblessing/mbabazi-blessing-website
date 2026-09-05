@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, ArrowRight, Clock, User, Check, Mail, Sparkles } from 'lucide-react';
+import { Search, ArrowRight, Clock, User, Check, Mail } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { IMAGES } from '@/components/portfolio/shared';
+import { IMAGES } from '@/config/site';
 
 const articles = [
   { title: 'Why Every Business Needs a Professional Website in 2026', category: 'Website Development', author: 'Mbabazi Blessing', readTime: '8 Minutes', date: 'Jul 2026', image: IMAGES.ecom, summary: 'A professional website is more than an online presence—it is a powerful marketing, sales, and customer service tool. This article explains why every modern business should invest in a fast, secure, mobile-friendly website and how it contributes to long-term business growth.', tags: ['Website Development', 'Business', 'Technology', 'Digital Transformation'] },

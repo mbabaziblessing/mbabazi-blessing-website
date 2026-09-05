@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
-export default function MagneticButton({ children, strength = 0.35, className = '', ...props }) {
+export default function MagneticButton({ children, strength = 0.35, className = '' }) {
   const ref = useRef(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);

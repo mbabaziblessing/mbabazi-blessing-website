@@ -1,8 +1,7 @@
-﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Calendar, MessageCircle, ChevronDown } from 'lucide-react';
-import { CONTACT } from '@/components/portfolio/shared';
+import { CONTACT } from '@/config/site';
 import ConsultationServices from '@/components/portfolio/consultation/ConsultationServices';
 import BookingProcess from '@/components/portfolio/consultation/BookingProcess';
 import ConsultationTestimonials from '@/components/portfolio/consultation/ConsultationTestimonials';
@@ -91,7 +90,7 @@ export default function BookConsultation() {
               Book a <span className="text-amber-400">Time Slot</span> Now
             </h2>
             <p className="text-graphite font-light mt-4 max-w-xl mx-auto">
-              Real-time availability synced directly with my calendar â€” updated automatically. Pick a time that works for you.
+              Real-time availability synced directly with my calendar — updated automatically. Pick a time that works for you.
             </p>
           </div>
           <div className="glass-strong rounded-2xl overflow-hidden">

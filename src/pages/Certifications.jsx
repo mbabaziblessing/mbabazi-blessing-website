@@ -1,7 +1,5 @@
-﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, ExternalLink, Download } from 'lucide-react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import PageHero from '@/components/portfolio/PageHero';
 
 const certs = [
@@ -14,8 +12,6 @@ const certs = [
 ];
 
 export default function Certifications() {
-  const [ref, isVisible] = useScrollAnimation();
-
   return (
     <>
       <PageHero

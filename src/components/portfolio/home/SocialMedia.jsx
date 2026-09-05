@@ -1,4 +1,3 @@
-﻿import React from "react";
 import { motion } from "framer-motion";
 import {
   Music2,
@@ -8,11 +7,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import {
-  CONTACT,
-  SOCIALS,
-  WhatsAppIcon,
-} from "@/components/portfolio/shared";
+import { CONTACT, SOCIALS } from "@/config/site";
+import { WhatsAppIcon } from "@/components/portfolio/shared";
 
 const platforms = [
   {
@@ -31,13 +27,13 @@ const platforms = [
   },
   {
     name: "Instagram",
-    icon: () => <span className="text-lg font-bold">◎</span>,
+    icon: () => <span className="text-lg font-bold">?</span>,
     desc: "Fashion content, branding, creative work, behind-the-scenes, and project showcases.",
     url: SOCIALS.instagram,
   },
   {
     name: "X (Twitter)",
-    icon: () => <span className="text-lg font-bold">𝕏</span>,
+    icon: () => <span className="text-lg font-bold">??</span>,
     desc: "Technology discussions, AI updates, web development insights, and industry news.",
     url: SOCIALS.twitter,
   },
