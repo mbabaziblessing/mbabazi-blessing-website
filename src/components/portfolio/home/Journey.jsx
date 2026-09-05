@@ -1,19 +1,9 @@
 import { motion } from 'framer-motion';
 import {
-  GraduationCap, Laptop, Store, Globe, Code, TrendingUp, Rocket,
   BookOpen, Lightbulb, Briefcase, Sparkles,
 } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-
-const steps = [
-  { icon: GraduationCap, title: 'Early Education', desc: 'Completed my primary and secondary education in Uganda, where I developed a strong interest in technology, creativity, business, and problem-solving. During this period, I began exploring computers, digital tools, and entrepreneurship.' },
-  { icon: Laptop, title: 'Building Technical Skills', desc: 'Started learning website development, UI/UX design, branding, graphic design, programming, digital marketing, and modern web technologies through continuous practice and self-learning.' },
-  { icon: Store, title: 'Entering Entrepreneurship', desc: 'Founded Bless Fashion House, a fashion and lifestyle business providing clothing, shoes, bags, beauty products, accessories, uniforms, and custom tailoring while gaining practical business management experience.' },
-  { icon: Globe, title: 'Expanding into Digital Solutions', desc: 'Began designing modern websites, e-commerce platforms, branding solutions, AI-powered applications, and business management systems to help organizations improve their digital presence and customer experience.' },
-  { icon: Code, title: 'Building Innovative Projects', desc: 'Worked on multiple digital projects including personal portfolio development, AI assistants, business platforms, e-commerce systems, healthcare solutions, and software ideas focused on solving practical business challenges.' },
-  { icon: TrendingUp, title: 'Continuous Growth', desc: 'I continue expanding my knowledge in software engineering, artificial intelligence, cloud technologies, business strategy, cybersecurity, user experience design, and digital innovation to build world-class products.' },
-  { icon: Rocket, title: 'Future Vision', desc: 'My long-term goal is to build globally recognized businesses in technology, fashion, artificial intelligence, e-commerce, financial technology, and digital innovation while creating employment opportunities and contributing to Africa\'s economic transformation.' },
-];
+import { journeySteps } from '@/data/journey';
 
 const summary = [
   { icon: BookOpen, title: 'Learning', desc: 'Continuously improving my technical and business knowledge.' },
@@ -63,15 +53,13 @@ export default function Journey() {
           <div className="absolute top-0 bottom-0 left-5 md:left-1/2 w-px bg-gradient-to-b from-vapor/50 via-vapor/25 to-transparent md:-translate-x-1/2" />
 
           <div className="space-y-8 md:space-y-0">
-            {steps.map((step, i) => {
-              const Icon = step.icon;
-              const stepNum = `0${i + 1}`;
+            {journeySteps.map((step, i) => {
               const left = i % 2 === 0;
               return (
-                <div key={step.title} className="relative md:grid md:grid-cols-2 md:gap-16 md:py-6">
+                <div key={step.id} className="relative md:grid md:grid-cols-2 md:gap-16 md:py-6">
                   {/* node */}
                   <div className="absolute left-5 md:left-1/2 -translate-x-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full glass-strong flex items-center justify-center border border-vapor/30">
-                    <Icon size={18} className="text-vapor" />
+                    <span className="font-mono text-xs text-vapor">{step.step}</span>
                   </div>
 
                   {/* card */}
@@ -83,9 +71,18 @@ export default function Journey() {
                     className={`pl-14 md:pl-0 ${left ? 'md:col-start-1 md:text-right md:pr-12' : 'md:col-start-2 md:pl-12'}`}
                   >
                     <div className="glass rounded-2xl p-6 hover:border-vapor/25 transition-all duration-500">
-                      <span className="font-mono text-vapor text-xs tracking-[0.3em]">STEP {stepNum}</span>
+                      <div className="mb-5 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]">
+                        <img
+                          src={step.image}
+                          alt={step.alt}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-40 w-full object-cover transition-transform duration-500 hover:scale-105 sm:h-48"
+                        />
+                      </div>
+                      <span className="font-mono text-vapor text-xs tracking-[0.3em]">STEP {step.step}</span>
                       <h3 className="font-heading text-xl sm:text-2xl font-light text-alabaster mt-1 mb-3">{step.title}</h3>
-                      <p className="text-graphite text-sm font-light leading-relaxed">{step.desc}</p>
+                      <p className="text-graphite text-sm font-light leading-relaxed">{step.description}</p>
                     </div>
                   </motion.div>
                 </div>

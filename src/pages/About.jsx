@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Code2, Palette, ShoppingBag, TrendingUp, Globe, Zap, Scissors, Users, Target, Eye, Heart } from 'lucide-react';
 import { useScrollAnimation, useCountUp } from '@/hooks/useScrollAnimation';
-import { IMAGES } from '@/config/site';
 import PageHero from '@/components/portfolio/PageHero';
 import HomeResources from '@/components/portfolio/home/Resources';
+import Journey from '@/components/portfolio/home/Journey';
 
 const expertise = [
   { icon: Code2, label: 'Web Development' },
@@ -83,7 +83,7 @@ export default function About() {
             <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.2 }} className="relative">
               <div className="absolute -inset-2 bg-gradient-to-br from-vapor/10 to-transparent rounded-3xl blur-sm" />
               <div className="relative rounded-2xl overflow-hidden border border-white/8">
-                <img src={IMAGES.workspace} alt="Workspace" className="w-full h-auto object-cover" />
+                <img src="/assets/portfolio/about-me.jpg" alt="Mbabazi Blessing" className="w-full h-auto object-cover" />
               </div>
             </motion.div>
           </div>
@@ -126,6 +126,8 @@ export default function About() {
           </Link>
         </div>
       </section>
+
+      <Journey />
 
       {/* Stats */}
       <section className="py-16 pb-32">
