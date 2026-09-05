@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Search, Calendar, CreditCard, MailCheck, Video, ArrowRight, Check,
+  Search, ArrowRight, Check,
   Globe, ShoppingCart, PenTool, Tag, Bot, Megaphone, TrendingUp, Briefcase, Sparkles,
 } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const steps = [
-  { icon: Search, title: 'Choose a Service', desc: 'Select the consultation service that matches your project or business needs.' },
-  { icon: Calendar, title: 'Book a Date & Time', desc: 'Choose an available date and time that works for you through Calendly.' },
-  { icon: CreditCard, title: 'Complete Payment', desc: 'Securely complete your payment (where applicable) to confirm your booking.' },
-  { icon: MailCheck, title: 'Receive Confirmation', desc: "You'll receive an email confirmation with your Google Meet link and meeting details." },
-  { icon: Video, title: 'Attend Your Consultation', desc: 'Join the meeting on time and receive personalized guidance and recommendations.' },
+  { image: '/assets/consultation/how-choose-service.jfif', title: 'Choose a Service', desc: 'Select the consultation service that matches your project or business needs.' },
+  { image: '/assets/consultation/how-book-date-time.png', title: 'Book a Date & Time', desc: 'Choose an available date and time that works for you through Calendly.' },
+  { image: '/assets/consultation/how-complete-payment.png', title: 'Complete Payment', desc: 'Securely complete your payment (where applicable) to confirm your booking.' },
+  { image: '/assets/consultation/how-receive-confirmation.png', title: 'Receive Confirmation', desc: "You'll receive an email confirmation with your Google Meet link and meeting details." },
+  { image: '/assets/consultation/how-attend-consultation.jfif', title: 'Attend Your Consultation', desc: 'Join the meeting on time and receive personalized guidance and recommendations.' },
 ];
 
 const consultations = [
@@ -60,11 +60,15 @@ export default function BookConsultation() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {steps.map((s, i) => {
-              const Icon = s.icon;
               return (
                 <motion.div key={s.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="glass rounded-2xl p-5 text-center hover:border-vapor/25 hover:-translate-y-1 transition-all duration-500">
-                  <div className="w-11 h-11 rounded-xl bg-vapor/10 flex items-center justify-center mx-auto mb-3">
-                    <Icon size={20} className="text-vapor" />
+                  <div className="mx-auto mb-3 flex h-20 w-full max-w-[8rem] items-center justify-center overflow-hidden rounded-xl bg-vapor/10 p-2">
+                    <img
+                      src={s.image}
+                      alt={`${s.title} consultation step`}
+                      loading="lazy"
+                      className="h-full w-full object-contain"
+                    />
                   </div>
                   <span className="font-mono text-[10px] text-vapor tracking-[0.2em]">STEP {i + 1}</span>
                   <h4 className="text-alabaster font-medium text-sm mt-1 mb-2">{s.title}</h4>
