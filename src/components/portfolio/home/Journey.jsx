@@ -20,7 +20,7 @@ export default function Journey() {
       <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="relative max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-14">
+        <div className="text-center mb-10">
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
@@ -33,14 +33,14 @@ export default function Journey() {
             initial={{ opacity: 0, y: 20 }}
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.05 }}
-            className="font-heading text-4xl sm:text-5xl font-light text-alabaster mb-4"
+            className="font-heading text-4xl sm:text-5xl font-light text-alabaster mb-3"
           >
             My Journey
           </motion.h2>
           <p className="text-graphite font-light max-w-2xl mx-auto">
             The milestones that have shaped my journey as an entrepreneur, developer, designer, and innovator.
           </p>
-          <p className="text-graphite/80 text-sm font-light max-w-3xl mx-auto mt-5 leading-relaxed">
+          <p className="text-graphite/80 text-sm font-light max-w-3xl mx-auto mt-3 leading-relaxed">
             Every achievement begins with a single step. My journey has been built through continuous learning,
             practical experience, entrepreneurship, and a commitment to solving real-world problems with technology
             and creativity. Each milestone has strengthened my skills and prepared me for larger opportunities.
@@ -48,41 +48,58 @@ export default function Journey() {
         </div>
 
         {/* Timeline */}
-        <div className="relative">
-          {/* vertical line: mobile left, desktop center */}
-          <div className="absolute top-0 bottom-0 left-5 md:left-1/2 w-px bg-gradient-to-b from-vapor/50 via-vapor/25 to-transparent md:-translate-x-1/2" />
+        <div className="relative mx-auto max-w-6xl">
+          <motion.div
+            aria-hidden="true"
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={isVisible ? { scaleY: 1, opacity: 1 } : {}}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+            className="absolute bottom-5 left-3 top-5 z-0 w-px origin-top bg-gradient-to-b from-vapor/70 via-blue-400/45 to-vapor/15 shadow-[0_0_12px_rgba(139,92,246,0.45)] md:bottom-0 md:left-1/2 md:top-0 md:-translate-x-1/2"
+          />
 
-          <div className="space-y-8 md:space-y-0">
+          <div className="space-y-5 md:space-y-2">
             {journeySteps.map((step, i) => {
               const left = i % 2 === 0;
               return (
-                <div key={step.id} className="relative md:grid md:grid-cols-2 md:gap-16 md:py-6">
-                  {/* node */}
-                  <div className="absolute left-5 md:left-1/2 -translate-x-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full glass-strong flex items-center justify-center border border-vapor/30">
-                    <span className="font-mono text-xs text-vapor">{step.step}</span>
-                  </div>
-
-                  {/* card */}
+                <div key={step.id} className="relative min-h-0 md:grid md:grid-cols-2 md:gap-8 md:py-2">
                   <motion.div
-                    initial={{ opacity: 0, x: left ? -24 : 24, y: 10 }}
-                    whileInView={{ opacity: 1, x: 0, y: 0 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.6 }}
-                    className={`pl-14 md:pl-0 ${left ? 'md:col-start-1 md:text-right md:pr-12' : 'md:col-start-2 md:pl-12'}`}
+                    initial={{ scale: 0.65, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true, margin: '-30px' }}
+                    transition={{ duration: 0.35 }}
+                    className="absolute left-3 top-1/2 z-20 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-vapor/50 bg-obsidian shadow-[0_0_14px_rgba(139,92,246,0.5)] md:left-1/2 md:h-8 md:w-8"
                   >
-                    <div className="glass rounded-2xl p-6 hover:border-vapor/25 transition-all duration-500">
-                      <div className="mb-5 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]">
+                    <span className="font-mono text-[9px] text-vapor">{step.step}</span>
+                  </motion.div>
+
+                  <div
+                    aria-hidden="true"
+                    className={`absolute top-1/2 z-10 hidden h-px w-8 -translate-y-1/2 bg-gradient-to-r from-vapor/50 to-blue-400/40 md:block ${left ? 'right-1/2' : 'left-1/2'}`}
+                  />
+
+                  <motion.div
+                    initial={{ opacity: 0, x: left ? -18 : 18 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ duration: 0.45 }}
+                    className={`relative z-10 pl-10 md:pl-0 ${left ? 'md:col-start-1 md:justify-self-end md:pr-12' : 'md:col-start-2 md:pl-12'}`}
+                  >
+                    <div className="glass w-full max-w-[31rem] rounded-2xl p-4 transition-all duration-500 hover:border-vapor/25 sm:p-5">
+                      <div className="mb-4 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] aspect-[16/8]">
                         <img
                           src={step.image}
                           alt={step.alt}
                           loading="lazy"
                           decoding="async"
-                          className="h-40 w-full object-cover transition-transform duration-500 hover:scale-105 sm:h-48"
+                          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                         />
                       </div>
-                      <span className="font-mono text-vapor text-xs tracking-[0.3em]">STEP {step.step}</span>
-                      <h3 className="font-heading text-xl sm:text-2xl font-light text-alabaster mt-1 mb-3">{step.title}</h3>
-                      <p className="text-graphite text-sm font-light leading-relaxed">{step.description}</p>
+                      <div className={`flex items-center gap-3 ${left ? 'md:justify-end' : ''}`}>
+                        <span className="font-mono text-[10px] tracking-[0.25em] text-vapor">STEP {step.step}</span>
+                        <span className="h-px w-8 bg-vapor/30" aria-hidden="true" />
+                      </div>
+                      <h3 className="mt-1.5 mb-2 font-heading text-xl font-light leading-tight text-alabaster sm:text-2xl">{step.title}</h3>
+                      <p className="max-w-prose text-sm font-light leading-[1.55] text-graphite">{step.description}</p>
                     </div>
                   </motion.div>
                 </div>
