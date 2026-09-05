@@ -6,6 +6,7 @@ import {
   Eye, Briefcase, Calendar, Download, MapPin,
 } from 'lucide-react';
 import MagneticButton from '@/components/portfolio/MagneticButton';
+import { LOGO_URL } from '@/config/site';
 
 const stats = [
   { value: '25+', label: 'Projects Completed' },
@@ -191,8 +192,15 @@ export default function Hero() {
             >
               <div className="absolute -inset-3 bg-gradient-to-br from-violet-500/30 via-vapor/20 to-blue-500/30 rounded-[2rem] blur-2xl" />
               <div className="relative w-64 h-80 sm:w-80 sm:h-[420px] lg:w-96 lg:h-[500px] rounded-[2rem] overflow-hidden border border-white/10">
-                <img src="/assets/portfolio/portrait.webp" alt="Mbabazi Blessing — Fashion Entrepreneur and Full-Stack Developer" className="w-full h-full object-cover" loading="eager" fetchPriority="high" decoding="async" width="384" height="500" />
+                <img src="/assets/portfolio/portrait.webp" alt="Mbabazi Blessing portrait" className="w-full h-full object-cover" loading="eager" fetchPriority="high" decoding="async" width="384" height="500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-obsidian/70 via-transparent to-transparent" />
+              </div>
+
+              <div className="absolute -right-8 top-10 hidden w-28 rotate-6 overflow-hidden rounded-xl border border-white/15 bg-obsidian/80 p-1.5 shadow-2xl backdrop-blur-md lg:block">
+                <img src="/assets/portfolio/uiux-01.jpg" alt="UI/UX interface design preview" className="aspect-[3/4] w-full rounded-lg object-cover" loading="lazy" decoding="async" />
+              </div>
+              <div className="absolute -left-10 bottom-14 hidden w-32 -rotate-6 overflow-hidden rounded-xl border border-white/15 bg-obsidian/80 p-1.5 shadow-2xl backdrop-blur-md lg:block">
+                <img src={LOGO_URL} alt="Mbabazi Blessing logo" className="aspect-square w-full rounded-lg object-contain bg-white p-2" loading="lazy" decoding="async" />
               </div>
 
               {/* Floating location chip */}

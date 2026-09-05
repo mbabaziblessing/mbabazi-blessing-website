@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Star, Quote } from "lucide-react";
 
-import { IMAGES, CONTACT } from "@/config/site";
+import { CONTACT } from "@/config/site";
 import { WhatsAppIcon } from "@/components/portfolio/shared";
 
 import TrustedBy from "@/components/portfolio/TrustedBy";
@@ -11,6 +11,8 @@ import Ripple from "@/components/portfolio/Ripple";
 import SmartImage from "@/components/portfolio/SmartImage";
 
 import { blogPosts } from "@/components/portfolio/blogData";
+import { portfolioProjects } from "@/data/portfolioProjects";
+import { homeShowcase } from "@/data/homeShowcase";
 
 import Hero from "@/components/portfolio/home/Hero";
 import AboutSection from "@/components/portfolio/home/AboutSection";
@@ -23,23 +25,9 @@ import Resume from "@/components/portfolio/home/Resume";
 import SocialMedia from "@/components/portfolio/home/SocialMedia";
 import Newsletter from "@/components/portfolio/home/Newsletter";
 
-const featuredProjects = [
-  {
-    title: "Luxe Commerce",
-    category: "Websites",
-    image: IMAGES.ecom,
-  },
-  {
-    title: "Novus Brand System",
-    category: "Branding",
-    image: IMAGES.brand,
-  },
-  {
-    title: "FinTrack Dashboard",
-    category: "UI/UX",
-    image: IMAGES.uiux,
-  },
-];
+const featuredProjects = ["pearlmart", "web-development", "uiux"]
+  .map((slug) => portfolioProjects.find((project) => project.slug === slug))
+  .filter(Boolean);
 
 export default function Home() {
   return (
@@ -78,7 +66,7 @@ export default function Home() {
           Returns toward the darker base.
       ========================================================== */}
       <section className="section-dark relative">
-        <Journey />
+        <Journey compact />
       </section>
 
       {/* =========================================================
@@ -162,10 +150,10 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
             {featuredProjects.map((project, index) => (
               <motion.div
-                key={project.title}
+                key={project.id}
                 initial={{
                   opacity: 0,
                   y: 30,
@@ -181,13 +169,15 @@ export default function Home() {
                   delay: index * 0.1,
                 }}
               >
-                <TiltCard className="group h-full overflow-hidden rounded-2xl glass">
-                  <SmartImage
-                    src={project.image}
-                    alt={project.title}
-                    aspect="3/2"
-                    imgClassName="transition-transform duration-700 group-hover:scale-105"
-                  />
+                <TiltCard className={`group h-full overflow-hidden rounded-2xl glass ${index === 0 ? "lg:row-span-2" : ""}`}>
+                  <Link to={`/portfolio/${project.slug}`} className="block">
+                    <SmartImage
+                      src={project.primaryImage}
+                      alt={`${project.title} ${project.category} project visual`}
+                      aspect={index === 0 ? "4/3" : "16/9"}
+                      imgClassName="transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </Link>
 
                   <div className="p-5">
                     <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-vapor">
@@ -197,11 +187,50 @@ export default function Home() {
                     <h3 className="mt-1 text-lg font-medium text-alabaster">
                       {project.title}
                     </h3>
+                    <p className="mt-2 text-sm font-light leading-relaxed text-graphite">
+                      {project.shortDescription}
+                    </p>
+                    <Link to={`/portfolio/${project.slug}`} className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-vapor hover:gap-2">
+                      Explore Project
+                      <ArrowRight size={14} />
+                    </Link>
                   </div>
                 </TiltCard>
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          VISUAL SHOWCASE PREVIEW
+      ========================================================== */}
+      <section className="section-midnight relative py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="mb-2 font-mono text-xs uppercase tracking-[0.3em] text-vapor">Visual Showcase</p>
+              <h2 className="font-heading text-3xl font-light text-alabaster sm:text-4xl">Selected Visual Work</h2>
+            </div>
+            <Link to="/portfolio#visual-showcase" className="hidden items-center gap-1 text-sm text-vapor hover:gap-2 sm:flex">
+              View Full Showcase <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="grid auto-rows-[150px] grid-cols-2 gap-3 lg:grid-cols-4">
+            {homeShowcase.map((item, index) => (
+              <Link key={item.id} to="/portfolio#visual-showcase" className={`group relative overflow-hidden rounded-2xl border border-white/10 ${index === 0 ? "col-span-2 row-span-2" : ""}`}>
+                <img src={item.src} alt={item.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-obsidian/90 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-vapor">{item.category}</span>
+                  <h3 className="mt-1 text-sm font-medium text-alabaster">{item.title}</h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <Link to="/portfolio#visual-showcase" className="mt-6 inline-flex items-center gap-1 text-sm text-vapor sm:hidden">
+            View Full Showcase <ArrowRight size={14} />
+          </Link>
         </div>
       </section>
 

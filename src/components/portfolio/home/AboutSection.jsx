@@ -4,7 +4,6 @@ import {
   Briefcase, TrendingUp, Megaphone, Layers, Target,
 } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { IMAGES } from '@/config/site';
 
 const whatIDo = [
   { icon: Code, label: 'Full-Stack Website Development' },
@@ -85,7 +84,7 @@ export default function AboutSection() {
           >
             <div className="absolute -inset-2 bg-gradient-to-br from-violet-500/25 via-vapor/15 to-blue-500/25 rounded-[2rem] blur-2xl" />
             <div className="relative rounded-[2rem] overflow-hidden border border-white/10 aspect-[4/5]">
-              <img src={IMAGES.workspace} alt="Mbabazi Blessing at work" className="w-full h-full object-cover" />
+              <img src="/assets/portfolio/about-me.jpg" alt="Mbabazi Blessing" className="w-full h-full object-cover" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-gradient-to-t from-obsidian/60 via-transparent to-transparent" />
             </div>
           </motion.div>

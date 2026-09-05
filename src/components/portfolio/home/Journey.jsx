@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
   BookOpen, Lightbulb, Briefcase, Sparkles,
 } from 'lucide-react';
@@ -12,8 +13,11 @@ const summary = [
   { icon: Sparkles, title: 'Impact', desc: 'Helping businesses, entrepreneurs, and communities grow through technology and innovation.' },
 ];
 
-export default function Journey() {
+export default function Journey({ compact = false }) {
   const [ref, isVisible] = useScrollAnimation();
+  const visibleSteps = compact
+    ? [0, 1, 2, 4, 6].map((index) => journeySteps[index])
+    : journeySteps;
 
   return (
     <section ref={ref} className="relative py-24 border-t border-white/5">
@@ -38,13 +42,15 @@ export default function Journey() {
             My Journey
           </motion.h2>
           <p className="text-graphite font-light max-w-2xl mx-auto">
-            The milestones that have shaped my journey as an entrepreneur, developer, designer, and innovator.
+            {compact
+              ? 'A short look at the milestones shaping my work across technology, creativity, and entrepreneurship.'
+              : 'The milestones that have shaped my journey as an entrepreneur, developer, designer, and innovator.'}
           </p>
-          <p className="text-graphite/80 text-sm font-light max-w-3xl mx-auto mt-3 leading-relaxed">
+          {!compact && <p className="text-graphite/80 text-sm font-light max-w-3xl mx-auto mt-3 leading-relaxed">
             Every achievement begins with a single step. My journey has been built through continuous learning,
             practical experience, entrepreneurship, and a commitment to solving real-world problems with technology
             and creativity. Each milestone has strengthened my skills and prepared me for larger opportunities.
-          </p>
+          </p>}
         </div>
 
         {/* Timeline */}
@@ -58,7 +64,7 @@ export default function Journey() {
           />
 
           <div className="space-y-5 md:space-y-2">
-            {journeySteps.map((step, i) => {
+            {visibleSteps.map((step, i) => {
               const left = i % 2 === 0;
               return (
                 <div key={step.id} className="relative min-h-0 md:grid md:grid-cols-2 md:gap-8 md:py-2">
@@ -108,8 +114,16 @@ export default function Journey() {
           </div>
         </div>
 
+        {compact && (
+          <div className="mt-8 text-center">
+            <Link to="/about" className="inline-flex items-center gap-2 rounded-xl glass px-5 py-3 text-sm font-medium text-alabaster transition hover:bg-white/10">
+              View My Journey
+            </Link>
+          </div>
+        )}
+
         {/* Timeline summary */}
-        <div className="mt-16">
+        {!compact && <div className="mt-16">
           <div className="flex items-center gap-3 mb-8">
             <div className="h-px flex-1 bg-gradient-to-r from-vapor/40 to-transparent" />
             <h3 className="font-heading text-xl sm:text-2xl font-light text-alabaster">Timeline Summary</h3>
@@ -136,7 +150,7 @@ export default function Journey() {
               );
             })}
           </div>
-        </div>
+        </div>}
       </div>
     </section>
   );
