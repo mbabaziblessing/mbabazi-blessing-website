@@ -4,116 +4,10 @@ import { ArrowLeft, ArrowRight, X, ZoomIn } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHero from "@/components/portfolio/PageHero";
 import { portfolioProjects } from "@/data/portfolioProjects";
-
-const BASE = "/assets/portfolio";
-
-const showcaseItems = [
-  {
-    title: "UI/UX Interface",
-    category: "UI/UX",
-    image: `${BASE}/uiux-01.jpg`,
-  },
-  {
-    title: "UI/UX Concept",
-    category: "UI/UX",
-    image: `${BASE}/uiux-02.jpg`,
-  },
-  {
-    title: "UI/UX Dashboard Study",
-    category: "UI/UX",
-    image: `${BASE}/uiux-03.jpg`,
-  },
-  {
-    title: "UI/UX Mobile Experience",
-    category: "UI/UX",
-    image: `${BASE}/uiux-04.jpg`,
-  },
-  {
-    title: "UI/UX Product Direction",
-    category: "UI/UX",
-    image: `${BASE}/uiux-05.jpg`,
-  },
-  {
-    title: "Website Workspace",
-    category: "Websites",
-    image: `${BASE}/workspace-01.png`,
-  },
-  {
-    title: "Web Development Workspace",
-    category: "Websites",
-    image: `${BASE}/workspace-02.png`,
-  },
-  {
-    title: "Responsive Website Study",
-    category: "Websites",
-    image: `${BASE}/workspace-03.jfif`,
-  },
-  {
-    title: "E-commerce Experience",
-    category: "E-commerce",
-    image: `${BASE}/ecommerce-01.png`,
-  },
-  {
-    title: "E-commerce Concept",
-    category: "E-commerce",
-    image: `${BASE}/ecommerce-02.jpg`,
-  },
-  {
-    title: "Brand Identity",
-    category: "Branding",
-    image: `${BASE}/branding-01.jpg`,
-  },
-  {
-    title: "Branding Material",
-    category: "Branding",
-    image: `${BASE}/branding-02.jpg`,
-  },
-  {
-    title: "Fashion Collection",
-    category: "Fashion",
-    image: `${BASE}/fashion-01.jpg`,
-  },
-  {
-    title: "Fashion Detail",
-    category: "Fashion",
-    image: `${BASE}/fashion-02.jpg`,
-  },
-  {
-    title: "Fashion Story",
-    category: "Fashion",
-    image: `${BASE}/fashion-03.jpg`,
-  },
-  {
-    title: "Fashion Presentation",
-    category: "Fashion",
-    image: `${BASE}/fashion-04.jpg`,
-  },
-  {
-    title: "Graphic Design",
-    category: "Graphics",
-    image: `${BASE}/graphics-01.png`,
-  },
-  {
-    title: "Fabric Study",
-    category: "Fabric",
-    image: `${BASE}/fabric-01.jpg`,
-  },
-  {
-    title: "Fabric Texture",
-    category: "Fabric",
-    image: `${BASE}/fabric-02.jpg`,
-  },
-  {
-    title: "Fabric Detail",
-    category: "Fabric",
-    image: `${BASE}/fabric-03.jpg`,
-  },
-  {
-    title: "Fabric Composition",
-    category: "Fabric",
-    image: `${BASE}/fabric-04.jpg`,
-  },
-];
+import {
+  visualShowcase,
+  visualShowcaseCategories,
+} from "@/data/visualShowcase";
 
 const projectFilters = [
   "All",
@@ -125,7 +19,30 @@ const projectFilters = [
   "Graphics",
 ];
 
-const showcaseFilters = [...projectFilters, "Fabric"];
+function ShowcaseImage({ item, className, loading = "lazy" }) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <div
+        className={`${className} flex items-center justify-center bg-white/[0.04] p-6 text-center text-xs text-graphite`}
+      >
+        {item.title} is temporarily unavailable.
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={item.src}
+      alt={item.alt}
+      loading={loading}
+      decoding="async"
+      onError={() => setFailed(true)}
+      className={className}
+    />
+  );
+}
 
 function ShowcaseLightbox({ item, items, index, onClose, onPrevious, onNext }) {
   return (
@@ -143,9 +60,9 @@ function ShowcaseLightbox({ item, items, index, onClose, onPrevious, onNext }) {
         className="relative flex h-full w-full max-w-6xl items-center justify-center"
         onClick={(event) => event.stopPropagation()}
       >
-        <img
-          src={item.image}
-          alt={`${item.title} ${item.category} showcase visual`}
+        <ShowcaseImage
+          item={item}
+          loading="eager"
           className="max-h-[calc(100vh-8rem)] max-w-full rounded-2xl object-contain"
         />
 
@@ -179,9 +96,15 @@ function ShowcaseLightbox({ item, items, index, onClose, onPrevious, onNext }) {
           </>
         )}
 
-        <p className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full glass-strong px-4 py-2 font-mono text-xs text-graphite">
-          {index + 1} / {items.length}
-        </p>
+        <div className="absolute bottom-0 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full glass-strong px-4 py-2 text-center">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-vapor">
+            {item.category}
+          </span>
+          <span className="text-xs text-alabaster">{item.title}</span>
+          <span className="font-mono text-xs text-graphite">
+            {index + 1} / {items.length}
+          </span>
+        </div>
       </div>
     </motion.div>
   );
@@ -200,8 +123,8 @@ export default function Portfolio() {
 
   const filteredShowcase = useMemo(() => (
     activeShowcaseCategory === "All"
-      ? showcaseItems
-      : showcaseItems.filter((item) => item.category === activeShowcaseCategory)
+      ? visualShowcase
+      : visualShowcase.filter((item) => item.category === activeShowcaseCategory)
   ), [activeShowcaseCategory]);
 
   const lightboxItem = lightboxIndex === null ? null : filteredShowcase[lightboxIndex];
@@ -315,16 +238,19 @@ export default function Portfolio() {
             <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-vapor">Visual Showcase</p>
             <h2 className="font-heading text-3xl font-light text-alabaster sm:text-5xl">Creative Gallery</h2>
             <p className="mt-3 max-w-2xl text-sm font-light leading-relaxed text-graphite">
-              Browse visual work separately from the project detail pages and open any image for a fullscreen view.
+              Browse current visual work and open any image for a larger fullscreen view.
             </p>
           </div>
 
           <div className="mb-8 flex flex-wrap gap-2" aria-label="Visual showcase categories">
-            {showcaseFilters.map((filter) => (
+            {visualShowcaseCategories.map((filter) => (
               <button
                 key={filter}
                 type="button"
-                onClick={() => setActiveShowcaseCategory(filter)}
+                onClick={() => {
+                  setActiveShowcaseCategory(filter);
+                  setLightboxIndex(null);
+                }}
                 className={`rounded-xl px-3 py-2 text-xs font-medium transition ${
                   activeShowcaseCategory === filter ? "bg-vapor text-white" : "glass text-graphite hover:text-alabaster"
                 }`}
@@ -338,7 +264,7 @@ export default function Portfolio() {
             <AnimatePresence mode="popLayout">
               {filteredShowcase.map((item, index) => (
                 <motion.button
-                  key={item.image}
+                  key={item.id}
                   layout
                   type="button"
                   onClick={() => setLightboxIndex(index)}
@@ -349,10 +275,8 @@ export default function Portfolio() {
                   aria-label={`Open ${item.title} showcase image`}
                   className={`group relative overflow-hidden rounded-2xl border border-white/10 text-left transition-all duration-500 hover:border-vapor/30 ${index === 0 ? "col-span-2 row-span-2" : ""}`}
                 >
-                  <img
-                    src={item.image}
-                    alt={`${item.title} ${item.category} showcase visual`}
-                    loading="lazy"
+                  <ShowcaseImage
+                    item={item}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-obsidian/90 via-obsidian/10 to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-95" />
