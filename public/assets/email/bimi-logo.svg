@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" viewBox="0 0 256 256" preserveAspectRatio="xMidYMid meet">
+  <title>Mbabazi Blessing</title>
+  <desc>Mbabazi Blessing brand mark for email identification.</desc>
+  <rect width="256" height="256" fill="#FFFFFF"/>
+
+  <!-- Silver M -->
+  <path fill="#E7ECF5" fill-rule="evenodd" d="M38 54 L38 184 L64 184 L64 101 L96 132 L128 101 L128 184 L154 184 L154 54 L128 54 L96 86 L64 54 Z"/>
+  <path fill="#AAB8D3" d="M38 54 L52 69 L52 168 L38 184 Z M64 54 L96 86 L91 91 L64 69 Z M128 54 L142 54 L142 184 L128 184 Z"/>
+
+  <!-- Blue B -->
+  <path fill="#1764FF" fill-rule="evenodd" d="M126 54 H183 C214 54 229 68 229 89 C229 103 222 114 211 121 C225 127 233 139 233 156 C233 177 217 192 185 192 H126 V168 H181 C197 168 205 163 205 153 C205 142 197 137 181 137 H126 V113 H180 C195 113 202 108 202 98 C202 88 195 82 180 82 H126 Z"/>
+  <path fill="#C41CFF" d="M181 137 H205 C211 141 214 147 214 154 C214 168 203 176 184 176 H160 V168 H181 C197 168 205 163 205 153 C205 146 197 141 181 141 Z"/>
+  <path fill="#00D7F6" d="M183 54 H210 C222 60 229 72 229 88 C229 95 227 101 224 106 C221 93 213 82 197 82 H183 Z"/>
+
+  <!-- Code mark -->
+  <path fill="#00C7F5" d="M78 143 L59 128 L78 113 L85 121 L72 128 L85 136 Z"/>
+  <path fill="#1764FF" d="M105 112 L113 112 L100 145 L92 145 Z"/>
+  <path fill="#00C7F5" d="M127 113 L146 128 L127 143 L120 135 L133 128 L120 121 Z"/>
+
+  <!-- Orbit / swoosh -->
+  <path fill="#00C7F5" d="M18 169 C44 196 79 207 119 199 C157 191 186 171 211 145 C177 185 143 213 101 225 C67 235 35 219 18 196 C11 186 11 177 18 169 Z"/>
+  <path fill="#C41CFF" d="M20 181 C43 202 77 211 113 204 C151 196 185 172 211 145 C178 186 143 211 105 222 C71 231 40 216 22 198 C15 191 14 185 20 181 Z"/>
+
+  <!-- Small highlight band -->
+  <path fill="#1764FF" d="M15 171 C40 192 74 201 111 194 C151 186 184 165 208 144 C181 173 151 196 115 207 C75 219 39 207 18 188 C12 183 11 176 15 171 Z"/>
+</svg>
