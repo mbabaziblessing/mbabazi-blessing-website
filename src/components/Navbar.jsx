@@ -81,13 +81,6 @@ export default function Navbar() {
     };
   }, []);
 
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, [location.pathname]);
-
   const closeNavigation = () => {
     setMobileOpen(false);
     setOpenDropdown(null);

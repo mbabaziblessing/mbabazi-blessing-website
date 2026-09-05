@@ -8,6 +8,7 @@ import {
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 const BlessAI = lazy(() => import("./components/BlessAI"));
 
@@ -60,6 +61,7 @@ function PageLoader() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <div className="min-h-screen overflow-x-hidden bg-obsidian text-alabaster">
         <Navbar />
 

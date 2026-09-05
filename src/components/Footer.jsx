@@ -194,6 +194,8 @@ export default function Footer() {
             <div className="flex flex-wrap items-center gap-5">
               <Link
                 to="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition hover:text-alabaster"
               >
                 Privacy
@@ -201,6 +203,8 @@ export default function Footer() {
 
               <Link
                 to="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition hover:text-alabaster"
               >
                 Terms
