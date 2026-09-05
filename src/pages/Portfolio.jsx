@@ -1,51 +1,221 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, X, ArrowLeft, ArrowRight, ZoomIn } from 'lucide-react';
-import { IMAGES } from '@/config/site';
-import PageHero from '@/components/portfolio/PageHero';
+import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  X,
+  ZoomIn,
+} from "lucide-react";
 
-const filters = ['All', 'Websites', 'UI/UX', 'Branding', 'Fashion', 'Graphics'];
+import PageHero from "@/components/portfolio/PageHero";
 
-const projects = [
-  { title: 'Luxe Commerce', desc: 'A premium e-commerce platform for a high-end fashion brand with seamless payment integration and inventory management.', category: 'Websites', tech: ['React', 'Node.js', 'MongoDB'], image: IMAGES.ecom, caseStudy: 'Increased client conversion rate by 40% within two months of launch. Integrated Stripe and local mobile money payments for the Ugandan market.' },
-  { title: 'Novus Brand System', desc: 'Complete brand identity and visual language for a tech startup including logo, typography, and brand guidelines.', category: 'Branding', image: IMAGES.brand, tech: ['Figma', 'Photoshop', 'Illustrator'], caseStudy: 'Delivered a 40-page brand guideline document and a complete visual system used across web, print, and social media.' },
-  { title: 'FinTrack Dashboard', desc: 'An intuitive financial tracking dashboard with real-time data visualization and responsive design.', category: 'UI/UX', image: IMAGES.uiux, tech: ['Figma', 'React', 'Recharts'], caseStudy: 'Designed and built a dashboard that simplified 7 complex workflows into one clean interface, boosting team productivity by 35%.' },
-  { title: 'Bless Fashion House', desc: 'Online presence and digital storefront for Bless Fashion House featuring lookbooks and custom orders.', category: 'Fashion', image: IMAGES.fashion, tech: ['Next.js', 'Tailwind', 'Firebase'], caseStudy: 'Built a complete digital storefront that doubled online sales within the first two months of operation.' },
-  { title: 'DevPortal Platform', desc: 'A developer documentation and API portal with interactive code examples and search functionality.', category: 'Websites', image: IMAGES.workspace, tech: ['React', 'Express', 'MySQL'], caseStudy: 'Created an interactive documentation portal reducing developer onboarding time from 3 days to 4 hours.' },
-  { title: 'Artisan Studio', desc: 'Visual identity and marketing collateral for a boutique design studio specializing in handcrafted goods.', category: 'Graphics', image: IMAGES.studio, tech: ['Canva', 'Photoshop', 'Figma'], caseStudy: 'Developed a cohesive visual identity applied to packaging, social media, and an in-store display system.' },
+const BASE = "/assets/portfolio";
+
+const filters = [
+  "All",
+  "Websites",
+  "E-commerce",
+  "UI/UX",
+  "Branding",
+  "Fashion",
+  "Graphics",
 ];
 
-const galleryItems = [
-  { title: 'Avant-Garde Collection', category: 'Fashion', image: IMAGES.fashion, desc: 'Editorial fashion piece from the Bless Fashion House autumn collection.' },
-  { title: 'Silk Texture Study', category: 'Fashion', image: IMAGES.fabric, desc: 'Macro study of fabric textures used in bespoke garments.' },
-  { title: 'Luxe E-Commerce', category: 'Websites', image: IMAGES.ecom, desc: 'High-end online store with seamless checkout experience.' },
-  { title: 'Novus Brand Identity', category: 'Branding', image: IMAGES.brand, desc: 'Complete visual identity system for a tech startup.' },
-  { title: 'FinTrack Dashboard', category: 'UI/UX', image: IMAGES.uiux, desc: 'Financial tracking interface with real-time data visualization.' },
-  { title: 'DevPortal Platform', category: 'Websites', image: IMAGES.workspace, desc: 'Developer documentation portal with interactive code samples.' },
-  { title: 'Artisan Studio Collateral', category: 'Graphics', image: IMAGES.studio, desc: 'Marketing collateral for a boutique design studio.' },
-  { title: 'Abstract Motion', category: 'Graphics', image: IMAGES.bg, desc: 'Generative art exploring the intersection of code and creativity.' },
+const projects = [
+  {
+    title: "PearlMart",
+    category: "E-commerce",
+    description:
+      "A marketplace platform concept focused on online shopping, seller operations, payments, delivery, and customer experience.",
+    image: `${BASE}/ecommerce-01.png`,
+    gallery: [
+      `${BASE}/ecommerce-01.png`,
+      `${BASE}/ecommerce-02.jpg`,
+    ],
+    tech: ["React", "E-commerce", "Payments", "Marketplace"],
+  },
+  {
+    title: "Website Design & Development",
+    category: "Websites",
+    description:
+      "Modern responsive website experiences designed for businesses, organizations, brands, and digital projects.",
+    image: `${BASE}/workspace-01.png`,
+    gallery: [
+      `${BASE}/workspace-01.png`,
+      `${BASE}/workspace-02.png`,
+      `${BASE}/workspace-03.jfif`,
+    ],
+    tech: ["React", "Vite", "Tailwind", "Responsive Design"],
+  },
+  {
+    title: "UI/UX Design Collection",
+    category: "UI/UX",
+    description:
+      "A collection of interface concepts focused on usability, responsive layouts, visual hierarchy, and modern digital experiences.",
+    image: `${BASE}/uiux-01.jpg`,
+    gallery: [
+      `${BASE}/uiux-01.jpg`,
+      `${BASE}/uiux-02.jpg`,
+      `${BASE}/uiux-03.jpg`,
+      `${BASE}/uiux-04.jpg`,
+      `${BASE}/uiux-05.jpg`,
+    ],
+    tech: ["UI/UX", "Figma", "Prototyping", "Design Systems"],
+  },
+  {
+    title: "Brand Identity & Design",
+    category: "Branding",
+    description:
+      "Creative identity work combining visual direction, digital graphics, presentation materials, and brand consistency.",
+    image: `${BASE}/branding-01.jpg`,
+    gallery: [
+      `${BASE}/branding-01.jpg`,
+      `${BASE}/branding-02.jpg`,
+    ],
+    tech: ["Branding", "Graphic Design", "Visual Identity"],
+  },
+  {
+    title: "Bless Fashion House",
+    category: "Fashion",
+    description:
+      "Fashion-focused digital creative work supporting clothing presentation, visual storytelling, and online brand presence.",
+    image: `${BASE}/fashion-01.jpg`,
+    gallery: [
+      `${BASE}/fashion-01.jpg`,
+      `${BASE}/fashion-02.jpg`,
+      `${BASE}/fashion-03.jpg`,
+      `${BASE}/fashion-04.jpg`,
+    ],
+    tech: ["Fashion", "Creative Direction", "Digital Branding"],
+  },
+  {
+    title: "Graphic Design & Creative Work",
+    category: "Graphics",
+    description:
+      "Promotional graphics, marketing materials, campaign visuals, and creative communication designed for digital and print use.",
+    image: `${BASE}/graphics-01.png`,
+    gallery: [`${BASE}/graphics-01.png`],
+    tech: ["Graphic Design", "Photoshop", "Creative Design"],
+  },
+];
+
+const showcase = [
+  {
+    title: "UI/UX Interface",
+    category: "UI/UX",
+    image: `${BASE}/uiux-01.jpg`,
+  },
+  {
+    title: "UI/UX Concept",
+    category: "UI/UX",
+    image: `${BASE}/uiux-02.jpg`,
+  },
+  {
+    title: "Website Workspace",
+    category: "Websites",
+    image: `${BASE}/workspace-01.png`,
+  },
+  {
+    title: "Web Development Workspace",
+    category: "Websites",
+    image: `${BASE}/workspace-02.png`,
+  },
+  {
+    title: "E-commerce Experience",
+    category: "E-commerce",
+    image: `${BASE}/ecommerce-01.png`,
+  },
+  {
+    title: "E-commerce Concept",
+    category: "E-commerce",
+    image: `${BASE}/ecommerce-02.jpg`,
+  },
+  {
+    title: "Brand Identity",
+    category: "Branding",
+    image: `${BASE}/branding-01.jpg`,
+  },
+  {
+    title: "Branding Material",
+    category: "Branding",
+    image: `${BASE}/branding-02.jpg`,
+  },
+  {
+    title: "Fashion Collection",
+    category: "Fashion",
+    image: `${BASE}/fashion-01.jpg`,
+  },
+  {
+    title: "Fashion Detail",
+    category: "Fashion",
+    image: `${BASE}/fashion-02.jpg`,
+  },
+  {
+    title: "Fabric Study",
+    category: "Fashion",
+    image: `${BASE}/fabric-01.jpg`,
+  },
+  {
+    title: "Graphic Design",
+    category: "Graphics",
+    image: `${BASE}/graphics-01.png`,
+  },
 ];
 
 export default function Portfolio() {
-  const [active, setActive] = useState('All');
+  const [active, setActive] = useState("All");
   const [selectedProject, setSelectedProject] = useState(null);
   const [lightbox, setLightbox] = useState(null);
 
-  const filtered = active === 'All' ? projects : projects.filter(p => p.category === active);
-  const galleryFiltered = active === 'All' ? galleryItems : galleryItems.filter(i => i.category === active);
+  const filteredProjects = useMemo(() => {
+    if (active === "All") return projects;
+    return projects.filter((project) => project.category === active);
+  }, [active]);
 
-  const nextImage = (e) => {
-    e.stopPropagation();
-    setLightbox(prev => {
-      const idx = galleryFiltered.findIndex(i => i.title === prev.title);
-      return galleryFiltered[(idx + 1) % galleryFiltered.length];
+  const filteredShowcase = useMemo(() => {
+    if (active === "All") return showcase;
+    return showcase.filter((item) => item.category === active);
+  }, [active]);
+
+  const openLightbox = (item) => {
+    setLightbox(item);
+  };
+
+  const closeLightbox = () => {
+    setLightbox(null);
+  };
+
+  const nextImage = (event) => {
+    event.stopPropagation();
+
+    setLightbox((current) => {
+      if (!current || filteredShowcase.length === 0) return current;
+
+      const currentIndex = filteredShowcase.findIndex(
+        (item) => item.title === current.title
+      );
+
+      return filteredShowcase[
+        (currentIndex + 1) % filteredShowcase.length
+      ];
     });
   };
-  const prevImage = (e) => {
-    e.stopPropagation();
-    setLightbox(prev => {
-      const idx = galleryFiltered.findIndex(i => i.title === prev.title);
-      return galleryFiltered[(idx - 1 + galleryFiltered.length) % galleryFiltered.length];
+
+  const previousImage = (event) => {
+    event.stopPropagation();
+
+    setLightbox((current) => {
+      if (!current || filteredShowcase.length === 0) return current;
+
+      const currentIndex = filteredShowcase.findIndex(
+        (item) => item.title === current.title
+      );
+
+      return filteredShowcase[
+        (currentIndex - 1 + filteredShowcase.length) %
+          filteredShowcase.length
+      ];
     });
   };
 
@@ -53,102 +223,262 @@ export default function Portfolio() {
     <>
       <PageHero
         title="Portfolio"
-        subtitle="A curated selection of projects spanning web development, design, branding, and fashion — each crafted with intention."
-        breadcrumb={[{ label: 'Home', path: '/' }, { label: 'Portfolio' }]}
+        subtitle="A collection of current digital, creative, e-commerce, branding, UI/UX, fashion, and graphic design work."
+        breadcrumb={[
+          { label: "Home", path: "/" },
+          { label: "Portfolio" },
+        ]}
       />
 
       {/* Filters */}
       <section className="py-8">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-wrap gap-2">
-            {filters.map((f) => (
-              <button key={f} onClick={() => setActive(f)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${active === f ? 'bg-vapor text-white' : 'glass text-graphite hover:text-alabaster hover:bg-white/5'}`}>{f}</button>
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => setActive(filter)}
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                  active === filter
+                    ? "bg-vapor text-white"
+                    : "glass text-graphite hover:bg-white/5 hover:text-alabaster"
+                }`}
+              >
+                {filter}
+              </button>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Projects */}
+      {/* Current Work */}
       <section className="py-8">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AnimatePresence mode="popLayout">
-              {filtered.map((project) => (
-                <motion.div key={project.title} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4 }} className="glass rounded-2xl overflow-hidden group hover:border-vapor/20 transition-all duration-500">
-                  <div className="relative aspect-[3/2] overflow-hidden">
-                    <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-obsidian/80 via-obsidian/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-4 gap-3">
-                      <button className="px-4 py-2 bg-vapor text-white rounded-lg text-sm font-medium flex items-center gap-1.5 hover:bg-vapor/90 transition"><ExternalLink size={14} /> Live Demo</button>
-                      <button className="px-4 py-2 glass text-alabaster rounded-lg text-sm font-medium flex items-center gap-1.5 hover:bg-white/10 transition"><span className="text-xs font-bold">GH</span> GitHub</button>
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <span className="font-mono text-[10px] text-vapor tracking-[0.2em] uppercase">{project.category}</span>
-                    <h3 className="text-alabaster font-medium text-lg mt-1 mb-2">{project.title}</h3>
-                    <p className="text-graphite text-sm font-light leading-relaxed mb-3">{project.desc}</p>
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {project.tech.map((t) => <span key={t} className="px-2 py-0.5 rounded-md bg-white/5 text-graphite text-[11px] font-mono">{t}</span>)}
-                    </div>
-                    <button onClick={() => setSelectedProject(project)} className="text-vapor text-sm font-medium hover:gap-2 flex items-center gap-1 transition-all">View Case Study →</button>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-      </section>
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-8">
+            <p className="mb-2 font-mono text-xs uppercase tracking-[0.3em] text-vapor">
+              Current Work
+            </p>
 
-      {/* Gallery */}
-      <section className="py-16 pb-32">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-10">
-            <p className="font-mono text-vapor text-xs tracking-[0.3em] uppercase mb-3">Project Gallery</p>
-            <h2 className="font-heading text-3xl sm:text-5xl font-light text-alabaster">Visual Showcase</h2>
-            <p className="text-graphite font-light mt-3">Click any image to expand and view in full screen.</p>
+            <h2 className="font-heading text-3xl font-light text-alabaster sm:text-4xl">
+              Selected Projects
+            </h2>
+
+            <p className="mt-3 max-w-2xl text-sm font-light leading-relaxed text-graphite">
+              Explore selected work across websites, e-commerce, interface
+              design, branding, fashion, and graphics.
+            </p>
           </div>
-          <motion.div layout className="grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[200px]">
+
+          <motion.div
+            layout
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
             <AnimatePresence mode="popLayout">
-              {galleryFiltered.map((item, i) => (
-                <motion.div key={item.title} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4 }} onClick={() => setLightbox(item)} className={`relative rounded-2xl overflow-hidden group cursor-pointer border border-white/8 hover:border-vapor/30 transition-all duration-500 ${i === 0 ? 'col-span-2 row-span-2' : ''}`}>
-                  <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-obsidian/90 via-obsidian/10 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <span className="font-mono text-[10px] text-vapor tracking-[0.2em] uppercase">{item.category}</span>
-                    <h3 className="text-alabaster font-medium text-sm sm:text-base mt-1">{item.title}</h3>
+              {filteredProjects.map((project) => (
+                <motion.article
+                  key={project.title}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.35 }}
+                  className="group overflow-hidden rounded-2xl glass transition-all duration-500 hover:border-vapor/20"
+                >
+                  <button
+                    type="button"
+                    onClick={() => openLightbox({
+                      title: project.title,
+                      category: project.category,
+                      image: project.image,
+                    })}
+                    className="relative block aspect-[3/2] w-full overflow-hidden text-left"
+                    aria-label={`Open ${project.title} image`}
+                  >
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-obsidian/80 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+                    <div className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full glass-strong opacity-0 transition-all duration-500 group-hover:opacity-100">
+                      <ZoomIn
+                        size={15}
+                        className="text-alabaster"
+                      />
+                    </div>
+                  </button>
+
+                  <div className="p-5">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-vapor">
+                      {project.category}
+                    </span>
+
+                    <h3 className="mt-1 text-lg font-medium text-alabaster">
+                      {project.title}
+                    </h3>
+
+                    <p className="mb-4 mt-2 text-sm font-light leading-relaxed text-graphite">
+                      {project.description}
+                    </p>
+
+                    <div className="mb-5 flex flex-wrap gap-1.5">
+                      {project.tech.map((technology) => (
+                        <span
+                          key={technology}
+                          className="rounded-md bg-white/5 px-2 py-0.5 font-mono text-[11px] text-graphite"
+                        >
+                          {technology}
+                        </span>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProject(project)}
+                      className="flex items-center gap-1 text-sm font-medium text-vapor transition-all hover:gap-2"
+                    >
+                      View Project Details
+                      <ExternalLink size={14} />
+                    </button>
                   </div>
-                  <div className="absolute top-3 right-3 w-9 h-9 rounded-full glass-strong flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    <ZoomIn size={15} className="text-alabaster" />
-                  </div>
-                </motion.div>
+                </motion.article>
               ))}
             </AnimatePresence>
           </motion.div>
         </div>
       </section>
 
-      {/* Case study modal */}
+      {/* Visual Showcase */}
+      <section className="py-16 pb-32">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10">
+            <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-vapor">
+              Visual Showcase
+            </p>
+
+            <h2 className="font-heading text-3xl font-light text-alabaster sm:text-5xl">
+              Creative Gallery
+            </h2>
+
+            <p className="mt-3 max-w-2xl text-sm font-light leading-relaxed text-graphite">
+              Browse current visual work and open any image for a larger
+              fullscreen view.
+            </p>
+          </div>
+
+          <motion.div
+            layout
+            className="grid auto-rows-[200px] grid-cols-2 gap-4 lg:grid-cols-4"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredShowcase.map((item, index) => (
+                <motion.button
+                  key={item.title}
+                  layout
+                  type="button"
+                  onClick={() => openLightbox(item)}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.35 }}
+                  className={`group relative overflow-hidden rounded-2xl border border-white/10 text-left transition-all duration-500 hover:border-vapor/30 ${
+                    index === 0
+                      ? "col-span-2 row-span-2"
+                      : ""
+                  }`}
+                >
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-obsidian/90 via-obsidian/10 to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-95" />
+
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-vapor">
+                      {item.category}
+                    </span>
+
+                    <h3 className="mt-1 text-sm font-medium text-alabaster sm:text-base">
+                      {item.title}
+                    </h3>
+                  </div>
+
+                  <div className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full glass-strong opacity-0 transition-all duration-500 group-hover:opacity-100">
+                    <ZoomIn
+                      size={15}
+                      className="text-alabaster"
+                    />
+                  </div>
+                </motion.button>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Project Details Modal */}
       <AnimatePresence>
         {selectedProject && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProject(null)} className="fixed inset-0 z-[60] bg-obsidian/95 backdrop-blur-xl flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} onClick={e => e.stopPropagation()} className="glass-strong rounded-3xl max-w-2xl w-full overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedProject(null)}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-obsidian/95 p-6 backdrop-blur-xl"
+          >
+            <motion.div
+              initial={{ scale: 0.96, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.96, y: 20 }}
+              onClick={(event) => event.stopPropagation()}
+              className="w-full max-w-2xl overflow-hidden rounded-3xl glass-strong"
+            >
               <div className="relative aspect-[16/9]">
-                <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-full object-cover" />
-                <button onClick={() => setSelectedProject(null)} className="absolute top-3 right-3 w-9 h-9 rounded-full glass-strong flex items-center justify-center text-alabaster hover:text-vapor transition"><X size={18} /></button>
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="h-full w-full object-cover"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedProject(null)}
+                  aria-label="Close project details"
+                  className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full glass-strong text-alabaster transition hover:text-vapor"
+                >
+                  <X size={18} />
+                </button>
               </div>
+
               <div className="p-6 sm:p-8">
-                <span className="font-mono text-[10px] text-vapor tracking-[0.2em] uppercase">{selectedProject.category}</span>
-                <h3 className="font-heading text-2xl font-light text-alabaster mt-1 mb-3">{selectedProject.title}</h3>
-                <p className="text-graphite text-sm font-light leading-relaxed mb-4">{selectedProject.desc}</p>
-                <div className="glass rounded-xl p-4 mb-5">
-                  <p className="font-mono text-xs text-vapor mb-2 uppercase tracking-wider">Case Study</p>
-                  <p className="text-graphite text-sm font-light leading-relaxed">{selectedProject.caseStudy}</p>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {selectedProject.tech.map((t) => <span key={t} className="px-2.5 py-1 rounded-md bg-white/5 text-graphite text-xs font-mono">{t}</span>)}
-                </div>
-                <div className="flex gap-3">
-                  <button className="flex items-center gap-1.5 px-4 py-2.5 bg-vapor text-white rounded-lg text-sm font-medium hover:bg-vapor/90 transition"><ExternalLink size={14} /> Live Demo</button>
-                  <button className="flex items-center gap-1.5 px-4 py-2.5 glass text-alabaster rounded-lg text-sm font-medium hover:bg-white/10 transition"><span className="text-xs font-bold">GH</span> GitHub</button>
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-vapor">
+                  {selectedProject.category}
+                </span>
+
+                <h3 className="mt-1 font-heading text-2xl font-light text-alabaster">
+                  {selectedProject.title}
+                </h3>
+
+                <p className="mt-3 text-sm font-light leading-relaxed text-graphite">
+                  {selectedProject.description}
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-1.5">
+                  {selectedProject.tech.map((technology) => (
+                    <span
+                      key={technology}
+                      className="rounded-md bg-white/5 px-2.5 py-1 font-mono text-xs text-graphite"
+                    >
+                      {technology}
+                    </span>
+                  ))}
                 </div>
               </div>
             </motion.div>
@@ -156,21 +486,67 @@ export default function Portfolio() {
         )}
       </AnimatePresence>
 
-      {/* Lightbox */}
+      {/* Fullscreen Gallery */}
       <AnimatePresence>
         {lightbox && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} className="fixed inset-0 z-[60] bg-obsidian/95 backdrop-blur-xl flex items-center justify-center p-6">
-            <button onClick={() => setLightbox(null)} className="absolute top-6 right-6 w-11 h-11 rounded-full glass-strong flex items-center justify-center text-graphite hover:text-alabaster transition z-10"><X size={20} /></button>
-            <button onClick={prevImage} className="absolute left-4 sm:left-8 w-11 h-11 rounded-full glass-strong flex items-center justify-center text-graphite hover:text-alabaster transition z-10"><ArrowLeft size={20} /></button>
-            <button onClick={nextImage} className="absolute right-4 sm:right-8 w-11 h-11 rounded-full glass-strong flex items-center justify-center text-graphite hover:text-alabaster transition z-10"><ArrowRight size={20} /></button>
-            <motion.div key={lightbox.title} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }} className="max-w-4xl w-full" onClick={e => e.stopPropagation()}>
-              <div className="rounded-2xl overflow-hidden border border-white/10">
-                <img src={lightbox.image} alt={lightbox.title} className="w-full max-h-[70vh] object-contain bg-obsidian" />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeLightbox}
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-obsidian/95 p-6 backdrop-blur-xl"
+          >
+            <button
+              type="button"
+              onClick={closeLightbox}
+              aria-label="Close image viewer"
+              className="absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full glass-strong text-graphite transition hover:text-alabaster"
+            >
+              <X size={20} />
+            </button>
+
+            <button
+              type="button"
+              onClick={previousImage}
+              aria-label="Previous image"
+              className="absolute left-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full glass-strong text-graphite transition hover:text-alabaster sm:left-8"
+            >
+              <ArrowLeft size={20} />
+            </button>
+
+            <button
+              type="button"
+              onClick={nextImage}
+              aria-label="Next image"
+              className="absolute right-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full glass-strong text-graphite transition hover:text-alabaster sm:right-8"
+            >
+              <ArrowRight size={20} />
+            </button>
+
+            <motion.div
+              key={lightbox.title}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              onClick={(event) => event.stopPropagation()}
+              className="w-full max-w-5xl"
+            >
+              <div className="overflow-hidden rounded-2xl border border-white/10">
+                <img
+                  src={lightbox.image}
+                  alt={lightbox.title}
+                  className="max-h-[75vh] w-full object-contain bg-obsidian"
+                />
               </div>
-              <div className="text-center mt-5">
-                <span className="font-mono text-[10px] text-vapor tracking-[0.2em] uppercase">{lightbox.category}</span>
-                <h3 className="text-alabaster font-heading text-2xl font-light mt-1 mb-2">{lightbox.title}</h3>
-                <p className="text-graphite text-sm font-light max-w-lg mx-auto">{lightbox.desc}</p>
+
+              <div className="mt-5 text-center">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-vapor">
+                  {lightbox.category}
+                </span>
+
+                <h3 className="mt-1 font-heading text-2xl font-light text-alabaster">
+                  {lightbox.title}
+                </h3>
               </div>
             </motion.div>
           </motion.div>
