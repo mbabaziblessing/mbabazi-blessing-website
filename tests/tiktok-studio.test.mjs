@@ -109,7 +109,7 @@ test('failed upload can be checked but cannot blindly retry bytes',async t=>{
   const env=environment(); const s=await loggedIn(env); mockTikTok(t,url=>url.startsWith('https://open-upload.')?new Response('',{status:500}):null);
   const r=await onRequest({request:request('init','POST',s,valid()),env}); const {id}=await r.json();
   const bytes=new Uint8Array(16); bytes.set(new TextEncoder().encode('ftyp'),4);
-  assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,502);
+  assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,424);
   assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,409);
   assert.equal(env.TIKTOK_STUDIO_DB.sqlite.prepare('SELECT stage FROM studio_jobs WHERE id=?').get(id).stage,'upload_uncertain');
 });

@@ -15,10 +15,16 @@ async function tiktok(path, token, body) {
   const response = await fetch(`${API}${path}`, { method: body ? 'POST' : 'GET',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20000) });
-  const data = await response.json();
+  let data;
+  try { data = await response.json(); }
+  catch {
+    console.warn('TikTok dependency returned a non-JSON response.', { path, status: response.status });
+    throw new StudioError(`TikTok temporarily returned HTTP ${response.status}. Wait one minute and try once.`, response.status === 429 ? 429 : 424);
+  }
   if (!response.ok || data.error?.code !== 'ok') {
     const code = data.error?.code || `http_${response.status}`;
-    throw new StudioError(`TikTok: ${code}. Check account eligibility, permissions, or reconnect.`, response.status === 429 ? 429 : 502);
+    console.warn('TikTok API request failed.', { path, status: response.status, code, logId: data.error?.log_id || null });
+    throw new StudioError(`TikTok: ${code}. Check account eligibility, permissions, or reconnect.`, response.status === 429 ? 429 : 424);
   }
   return data.data;
 }
@@ -73,10 +79,10 @@ export async function onRequest({ request, env }) {
         body: new URLSearchParams({ client_key: env.TIKTOK_CLIENT_KEY, client_secret: env.TIKTOK_CLIENT_SECRET, code,
           grant_type: 'authorization_code', redirect_uri: callback }), signal: AbortSignal.timeout(20000) });
       const auth = await response.json();
-      requireValue(response.ok && auth.access_token && auth.open_id && auth.expires_in > 60, 'TikTok token exchange failed. Restart login and check the callback configuration.', 502);
+      requireValue(response.ok && auth.access_token && auth.open_id && auth.expires_in > 60, 'TikTok token exchange failed. Restart login and check the callback configuration.', 424);
       requireValue(auth.scope?.split(',').includes('video.publish'), 'Publishing permission was not granted. Enable Direct Post and reconnect.', 403);
       const user = await tiktok('/user/info/?fields=open_id,avatar_url,display_name', auth.access_token);
-      requireValue(user.user?.open_id === auth.open_id, 'TikTok account could not be verified.', 502);
+      requireValue(user.user?.open_id === auth.open_id, 'TikTok account could not be verified.', 424);
       const old = cookie(request, SID);
       if (/^[a-f0-9]{64}$/.test(old)) {
         const oldId = await hash(old);
@@ -127,7 +133,7 @@ export async function onRequest({ request, env }) {
       try {
         const data = await tiktok('/post/publish/video/init/', s.auth.accessToken, {
           post_info: postInfo, source_info: { source: 'FILE_UPLOAD', video_size: body.size, chunk_size: body.size, total_chunk_count: 1 } });
-        requireValue(data.publish_id && data.upload_url, 'TikTok did not return an upload destination.', 502);
+        requireValue(data.publish_id && data.upload_url, 'TikTok did not return an upload destination.', 424);
         const payload = await seal({ publishId: data.publish_id, uploadUrl: validateUploadUrl(data.upload_url) }, env.TIKTOK_SESSION_SECRET);
         await env.TIKTOK_STUDIO_DB.prepare("UPDATE studio_jobs SET stage = 'ready', payload = ? WHERE id = ? AND owner = ?").bind(payload, id, s.id).run();
         return json({ id });
@@ -150,7 +156,7 @@ export async function onRequest({ request, env }) {
         const r = await fetch(validateUploadUrl(data.uploadUrl), { method: 'PUT', redirect: 'error', headers: {
           'Content-Type': 'video/mp4', 'Content-Length': String(bytes.length), 'Content-Range': `bytes 0-${bytes.length - 1}/${bytes.length}` },
           body: bytes, signal: AbortSignal.timeout(90000) });
-        requireValue(r.status === 201, 'TikTok did not confirm the full upload. Check status before trying another post.', 502);
+        requireValue(r.status === 201, 'TikTok did not confirm the full upload. Check status before trying another post.', 424);
         await env.TIKTOK_STUDIO_DB.prepare("UPDATE studio_jobs SET stage = 'processing' WHERE id = ? AND owner = ?").bind(job.id, s.id).run();
         return json({ stage: 'processing' });
       } catch (error) {
