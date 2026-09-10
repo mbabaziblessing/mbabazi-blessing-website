@@ -166,10 +166,19 @@ export async function onRequest({ request, env }) {
     }
     if (action === 'status' && request.method === 'GET') {
       const job = await ownedJob(env, s, url.searchParams.get('id'));
-      if (!job.payload) return json({ status: job.stage });
+      if (!job.payload) return json({ status: job.stage, expectedBytes: job.size });
       const data = await unseal(job.payload, env.TIKTOK_SESSION_SECRET);
       const status = await tiktok('/post/publish/status/fetch/', s.auth.accessToken, { publish_id: data.publishId });
-      return json({ status: status.status, failReason: status.fail_reason || null });
+      if (status.status === 'PUBLISH_COMPLETE' || status.status === 'FAILED') {
+        await env.TIKTOK_STUDIO_DB.prepare('UPDATE studio_jobs SET stage = ? WHERE id = ? AND owner = ?')
+          .bind(status.status.toLowerCase(), job.id, s.id).run();
+      }
+      return json({
+        status: status.status,
+        failReason: status.fail_reason || null,
+        uploadedBytes: Number.isSafeInteger(status.uploaded_bytes) ? status.uploaded_bytes : null,
+        expectedBytes: job.size,
+      });
     }
     return json({ error: 'Endpoint or method not found.' }, 404);
   } catch (error) {
