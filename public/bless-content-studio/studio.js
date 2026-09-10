@@ -7,7 +7,12 @@ async function api(path, options = {}) {
   const response = await fetch(`/api/tiktok/${path}`, { credentials: 'same-origin', ...options,
     headers: { ...(options.method === 'POST' ? { 'X-Studio-CSRF': state?.csrf || '' } : {}), ...options.headers } });
   const type = response.headers.get('Content-Type') || '';
-  if (!type.includes('application/json')) throw new Error('Studio API is not deployed yet. Complete the Cloudflare Functions setup.');
+  if (!type.includes('application/json')) {
+    const message = response.status === 502
+      ? 'Cloudflare returned a temporary 502 gateway error. Wait one minute and try once.'
+      : `Studio received an unexpected HTTP ${response.status} response. Check Cloudflare Functions logs.`;
+    throw new Error(message);
+  }
   const data = await response.json();
   if (!response.ok) { const e = new Error(data.error || 'Request failed.'); e.status = response.status; throw e; }
   return data;
