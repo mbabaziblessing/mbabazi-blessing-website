@@ -54,29 +54,52 @@ async function deleteOwnerMedia(env, owner) {
   await Promise.all((jobs.results || []).map(job => deleteMediaFromPayload(env, job.payload)));
 }
 async function serveMedia(request, env, url) {
-  requireValue(request.method === 'GET' || request.method === 'HEAD', 'Endpoint or method not found.', 404);
   const id = url.searchParams.get('id'); const token = url.searchParams.get('token');
-  requireValue(/^[a-f0-9]{64}$/.test(id || '') && /^[a-f0-9]{64}$/.test(token || ''), 'Media not found.', 404);
-  const job = await env.TIKTOK_STUDIO_DB.prepare('SELECT payload FROM studio_jobs WHERE id = ? AND expires > ?').bind(id, now()).first();
-  requireValue(job?.payload, 'Media not found.', 404);
-  const data = await unseal(job.payload, env.TIKTOK_SESSION_SECRET);
-  requireValue(data.objectKey && data.mediaTokenHash && await hash(token) === data.mediaTokenHash, 'Media not found.', 404);
-  const object = request.method === 'HEAD'
-    ? await env.TIKTOK_MEDIA_BUCKET.head(data.objectKey)
-    : await env.TIKTOK_MEDIA_BUCKET.get(data.objectKey, { range: request.headers });
-  requireValue(object, 'Media not found.', 404);
-  const headers = new Headers({
-    'Accept-Ranges': 'bytes', 'Cache-Control': 'private, no-store', 'Content-Type': 'video/mp4',
-    'X-Content-Type-Options': 'nosniff', ETag: object.httpEtag || object.etag || '',
-  });
-  if (object.writeHttpMetadata) object.writeHttpMetadata(headers);
-  headers.set('Content-Type', 'video/mp4');
-  if (object.range) {
-    headers.set('Content-Length', String(object.range.length));
-    headers.set('Content-Range', `bytes ${object.range.offset}-${object.range.offset + object.range.length - 1}/${object.size}`);
-  } else headers.set('Content-Length', String(object.size));
-  if (!headers.get('ETag')) headers.delete('ETag');
-  return new Response(request.method === 'HEAD' ? null : object.body, { status: object.range ? 206 : 200, headers });
+  const diagnostic = {
+    method: request.method,
+    job: /^[a-f0-9]{64}$/.test(id || '') ? id.slice(0, 8) : null,
+    rangeRequested: request.headers.has('Range'),
+  };
+  console.info('Studio media request received.', diagnostic);
+  try {
+    requireValue(request.method === 'GET' || request.method === 'HEAD', 'Endpoint or method not found.', 404);
+    requireValue(/^[a-f0-9]{64}$/.test(id || '') && /^[a-f0-9]{64}$/.test(token || ''), 'Media not found.', 404);
+    const job = await env.TIKTOK_STUDIO_DB.prepare('SELECT payload FROM studio_jobs WHERE id = ? AND expires > ?').bind(id, now()).first();
+    requireValue(job?.payload, 'Media not found.', 404);
+    const data = await unseal(job.payload, env.TIKTOK_SESSION_SECRET);
+    requireValue(data.objectKey && data.mediaTokenHash && await hash(token) === data.mediaTokenHash, 'Media not found.', 404);
+    const object = request.method === 'HEAD'
+      ? await env.TIKTOK_MEDIA_BUCKET.head(data.objectKey)
+      : await env.TIKTOK_MEDIA_BUCKET.get(data.objectKey, request.headers.has('Range') ? { range: request.headers } : undefined);
+    requireValue(object, 'Media not found.', 404);
+    const headers = new Headers({
+      'Accept-Ranges': 'bytes', 'Cache-Control': 'private, no-store', 'Content-Type': 'video/mp4',
+      'Content-Disposition': 'inline; filename="video.mp4"',
+      'X-Content-Type-Options': 'nosniff', ETag: object.httpEtag || object.etag || '',
+    });
+    if (object.writeHttpMetadata) object.writeHttpMetadata(headers);
+    headers.set('Content-Type', 'video/mp4');
+    if (object.range) {
+      headers.set('Content-Length', String(object.range.length));
+      headers.set('Content-Range', `bytes ${object.range.offset}-${object.range.offset + object.range.length - 1}/${object.size}`);
+    } else headers.set('Content-Length', String(object.size));
+    if (!headers.get('ETag')) headers.delete('ETag');
+    const status = object.range ? 206 : 200;
+    console.info('Studio media response prepared.', {
+      ...diagnostic,
+      status,
+      objectBytes: object.size,
+      responseBytes: object.range?.length || object.size,
+    });
+    return new Response(request.method === 'HEAD' ? null : object.body, { status, headers });
+  } catch (error) {
+    console.warn('Studio media request failed.', {
+      ...diagnostic,
+      status: error instanceof StudioError ? error.status : 500,
+      reason: error instanceof StudioError ? error.message : 'internal_error',
+    });
+    throw error;
+  }
 }
 export async function onRequest({ request, env }) {
   try {
