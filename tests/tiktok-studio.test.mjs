@@ -3,14 +3,10 @@ import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import { onRequest } from '../functions/api/tiktok/[[path]].js';
-import { seal, unseal, hash, randomToken, validatePost, validateUploadUrl, boundedBytes } from '../lib/tiktok-studio.js';
+import { seal, unseal, hash, randomToken, validatePost, boundedBytes } from '../lib/tiktok-studio.js';
 const origin = 'https://www.mbabaziblessing.com';
 const secret = 'test-only-secret-abcdefghijklmnopqrstuvwxyz';
 const creator = { creator_nickname:'Test Creator', creator_username:'test', privacy_level_options:['SELF_ONLY'], max_video_post_duration_sec:60, comment_disabled:false };
-const fixedLengths=[];
-if (!globalThis.FixedLengthStream) globalThis.FixedLengthStream=class {
-  constructor(length) { fixedLengths.push(length); const stream=new TransformStream(); this.readable=stream.readable; this.writable=stream.writable; }
-};
 const valid = () => ({ requestId:randomToken(), consent:true, privacy:'SELF_ONLY', size:16, type:'video/mp4', duration:5, caption:'My original test', paidPartnership:false, comments:false, ownBrand:false, aiGenerated:false });
 function database() {
   const sqlite = new DatabaseSync(':memory:');
@@ -23,7 +19,20 @@ function database() {
   });
   return { prepare: sql=>wrap(sql), async batch(statements) { const results=[]; for(const stmt of statements) results.push(await stmt.run()); return results; }, sqlite };
 }
-function environment() { return {TIKTOK_STUDIO_ENABLED:'true', TIKTOK_ORIGIN:origin, TIKTOK_CLIENT_KEY:'test-client', TIKTOK_CLIENT_SECRET:'test-client-secret', TIKTOK_SESSION_SECRET:secret, TIKTOK_STUDIO_DB:database()}; }
+function bucket() {
+  const objects=new Map();
+  return {
+    objects,
+    async put(key,value,options={}) { const bytes=new Uint8Array(await new Response(value).arrayBuffer()); objects.set(key,{bytes,httpMetadata:options.httpMetadata || {}}); },
+    async head(key) { const item=objects.get(key); return item ? r2Object(item) : null; },
+    async get(key) { const item=objects.get(key); return item ? {...r2Object(item),body:new Blob([item.bytes]).stream()} : null; },
+    async delete(key) { if(Array.isArray(key)) key.forEach(value=>objects.delete(value)); else objects.delete(key); },
+  };
+}
+function r2Object(item) {
+  return {size:item.bytes.length,etag:'test-etag',httpEtag:'"test-etag"',writeHttpMetadata(headers){ if(item.httpMetadata.contentType) headers.set('Content-Type',item.httpMetadata.contentType); }};
+}
+function environment() { return {TIKTOK_STUDIO_ENABLED:'true', TIKTOK_ORIGIN:origin, TIKTOK_CLIENT_KEY:'test-client', TIKTOK_CLIENT_SECRET:'test-client-secret', TIKTOK_SESSION_SECRET:secret, TIKTOK_STUDIO_DB:database(), TIKTOK_MEDIA_BUCKET:bucket()}; }
 async function loggedIn(env) {
   const raw=randomToken(); const csrf=randomToken(); const id=await hash(raw);
   const payload=await seal({accessToken:'secret-access-token',csrf,user:{open_id:'user-one',display_name:'Test'}},secret);
@@ -36,14 +45,11 @@ function request(path, method='GET', s=null, body, extra={}) {
 function mockTikTok(t, custom) {
   const calls=[];
   t.mock.method(globalThis,'fetch',async (url,options={})=>{
-    const upload=String(url).startsWith('https://open-upload.tiktokapis.com/');
-    const uploadedBody=upload&&options.body?await new Response(options.body).arrayBuffer():null;
-    calls.push({url:String(url),options,uploadedBody});
+    calls.push({url:String(url),options});
     if(custom) { const result=await custom(String(url),options); if(result) return result; }
     if(String(url).endsWith('/creator_info/query/')) return Response.json({data:creator,error:{code:'ok'}});
-    if(String(url).endsWith('/video/init/')) return Response.json({data:{publish_id:'publish-one',upload_url:'https://open-upload.tiktokapis.com/video/?upload_token=secret'},error:{code:'ok'}});
-    if(String(url).startsWith('https://open-upload.tiktokapis.com/')) return new Response('',{status:201,headers:{'Content-Range':'bytes 0-15/16'}});
-    if(String(url).endsWith('/status/fetch/')) return Response.json({data:{status:'PUBLISH_COMPLETE',uploaded_bytes:16},error:{code:'ok'}});
+    if(String(url).endsWith('/video/init/')) return Response.json({data:{publish_id:'publish-one'},error:{code:'ok'}});
+    if(String(url).endsWith('/status/fetch/')) return Response.json({data:{status:'PUBLISH_COMPLETE',downloaded_bytes:16},error:{code:'ok'}});
     if(String(url).endsWith('/oauth/revoke/')) return Response.json({});
     throw new Error('Unexpected mock request');
   });
@@ -59,10 +65,6 @@ test('validation enforces private consent and current account limits',()=>{
   for(const patch of [{consent:false},{privacy:'PUBLIC_TO_EVERYONE'},{size:21*1024*1024},{duration:61},{paidPartnership:true},{caption:'x'.repeat(2201)}]) assert.throws(()=>validatePost({...valid(),...patch},creator));
   assert.throws(()=>validatePost({...valid(),comments:true},{...creator,comment_disabled:true}));
   assert.throws(()=>validatePost(valid(),{...creator,privacy_level_options:[]}));
-});
-test('upload destinations reject arbitrary hosts, credentials and HTTP',()=>{
-  assert.ok(validateUploadUrl('https://upload.us.tiktokapis.com/video/?token=x'));
-  for(const url of ['https://evil.test/a','http://open-upload.tiktokapis.com/a','https://open-upload.tiktokapis.com.evil.test/a','https://u:p@open-upload.tiktokapis.com/a']) assert.throws(()=>validateUploadUrl(url));
 });
 test('request body limit enforced without Content-Length',async()=>{
   await assert.rejects(boundedBytes(new Request(origin,{method:'POST',body:'too much data'}),3));
@@ -100,42 +102,59 @@ test('post lifecycle keeps uploads private, prevents duplicates and isolates ses
   const input=valid(); const init=await onRequest({request:request('init','POST',s,input),env}); assert.equal(init.status,200);
   const {id}=await init.json();
   assert.equal((await onRequest({request:request('init','POST',s,input),env})).status,409);
-  assert.equal(calls.filter(c=>c.url.endsWith('/video/init/')).length,1);
-  assert.equal(JSON.parse(calls.find(c=>c.url.endsWith('/video/init/')).options.body).post_info.privacy_level,'SELF_ONLY');
+  assert.equal(calls.filter(c=>c.url.endsWith('/video/init/')).length,0);
   assert.equal((await onRequest({request:request(`status?id=${id}`,'GET',other),env})).status,404);
   const bytes=new Uint8Array(16); bytes.set(new TextEncoder().encode('ftyp'),4);
   assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',other,bytes,{'Content-Type':'video/mp4'}),env})).status,404);
   const upload=await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env});
-  assert.deepEqual(await upload.json(),{stage:'processing',receiptBytes:16});
-  const uploadCall=calls.find(c=>c.url.startsWith('https://open-upload.tiktokapis.com/'));
-  assert.equal(uploadCall.options.body instanceof ReadableStream,true); assert.equal(uploadCall.uploadedBody.byteLength,16);
-  assert.equal(fixedLengths.at(-1),16);
-  assert.equal(uploadCall.options.headers['Content-Length'],undefined);
+  assert.deepEqual(await upload.json(),{stage:'processing'});
+  const initCall=calls.find(c=>c.url.endsWith('/video/init/')); const initBody=JSON.parse(initCall.options.body);
+  assert.equal(initBody.post_info.privacy_level,'SELF_ONLY'); assert.equal(initBody.source_info.source,'PULL_FROM_URL');
+  assert.match(initBody.source_info.video_url,new RegExp(`^${origin}/api/tiktok/media\\?id=${id}&token=[a-f0-9]{64}$`));
+  assert.equal(env.TIKTOK_MEDIA_BUCKET.objects.size,1);
+  const media=await onRequest({request:new Request(initBody.source_info.video_url),env});
+  assert.equal(media.status,200); assert.equal(media.headers.get('Content-Length'),'16');
+  assert.deepEqual(new Uint8Array(await media.arrayBuffer()),bytes);
+  const invalidMedia=new URL(initBody.source_info.video_url); invalidMedia.searchParams.set('token','0'.repeat(64));
+  assert.equal((await onRequest({request:new Request(invalidMedia),env})).status,404);
   assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,409);
   const status=await onRequest({request:request(`status?id=${id}`,'GET',s),env});
-  assert.deepEqual(await status.json(),{status:'PUBLISH_COMPLETE',failReason:null,uploadedBytes:16,expectedBytes:16,receiptBytes:16});
+  assert.deepEqual(await status.json(),{status:'PUBLISH_COMPLETE',failReason:null,downloadedBytes:16,expectedBytes:16});
+  assert.equal(env.TIKTOK_MEDIA_BUCKET.objects.size,0);
   assert.equal(env.TIKTOK_STUDIO_DB.sqlite.prepare('SELECT stage FROM studio_jobs WHERE id=?').get(id).stage,'publish_complete');
   const response=await onRequest({request:request('session','GET',s),env}); const data=await response.text();
-  assert.ok(!data.includes('secret-access-token')); assert.ok(!data.includes('upload_token'));
+  assert.ok(!data.includes('secret-access-token')); assert.ok(!data.includes('token='));
 });
-test('failed upload can be checked but cannot blindly retry bytes',async t=>{
-  const env=environment(); const s=await loggedIn(env); mockTikTok(t,url=>url.startsWith('https://open-upload.')?new Response('',{status:500}):null);
+test('failed TikTok initialization deletes temporary media and blocks retries',async t=>{
+  const env=environment(); const s=await loggedIn(env); mockTikTok(t,url=>url.endsWith('/video/init/')?Response.json({data:{},error:{code:'url_ownership_unverified'}},{status:400}):null);
   const r=await onRequest({request:request('init','POST',s,valid()),env}); const {id}=await r.json();
   const bytes=new Uint8Array(16); bytes.set(new TextEncoder().encode('ftyp'),4);
   assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,424);
   assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,409);
-  assert.equal(env.TIKTOK_STUDIO_DB.sqlite.prepare('SELECT stage FROM studio_jobs WHERE id=?').get(id).stage,'upload_uncertain');
+  assert.equal(env.TIKTOK_STUDIO_DB.sqlite.prepare('SELECT stage FROM studio_jobs WHERE id=?').get(id).stage,'initialization_failed');
+  assert.equal(env.TIKTOK_MEDIA_BUCKET.objects.size,0);
 });
 test('disconnect removes local data even if TikTok revocation fails',async t=>{
   const env=environment(); const s=await loggedIn(env); mockTikTok(t,url=>url.endsWith('/oauth/revoke/')?new Response('bad',{status:500}):null);
-  await onRequest({request:request('init','POST',s,valid()),env});
+  const init=await onRequest({request:request('init','POST',s,valid()),env}); const {id}=await init.json();
+  const bytes=new Uint8Array(16); bytes.set(new TextEncoder().encode('ftyp'),4);
+  await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env});
+  assert.equal(env.TIKTOK_MEDIA_BUCKET.objects.size,1);
   const r=await onRequest({request:request('disconnect','POST',s),env}); assert.equal(r.status,200); assert.equal((await r.json()).revoked,false);
   assert.equal(env.TIKTOK_STUDIO_DB.sqlite.prepare('SELECT count(*) AS n FROM studio_sessions').get().n,0);
   assert.equal(env.TIKTOK_STUDIO_DB.sqlite.prepare('SELECT count(*) AS n FROM studio_jobs').get().n,0);
+  assert.equal(env.TIKTOK_MEDIA_BUCKET.objects.size,0);
   assert.ok(r.headers.get('Set-Cookie').includes('Max-Age=0'));
 });
-test('expired session is inaccessible and purged',async()=>{
-  const env=environment(); const s=await loggedIn(env); env.TIKTOK_STUDIO_DB.sqlite.prepare('UPDATE studio_sessions SET expires=0').run();
+test('expired session is inaccessible and temporary media is purged',async t=>{
+  const env=environment(); const s=await loggedIn(env); mockTikTok(t);
+  const init=await onRequest({request:request('init','POST',s,valid()),env}); const {id}=await init.json();
+  const bytes=new Uint8Array(16); bytes.set(new TextEncoder().encode('ftyp'),4);
+  await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env});
+  assert.equal(env.TIKTOK_MEDIA_BUCKET.objects.size,1);
+  env.TIKTOK_STUDIO_DB.sqlite.prepare('UPDATE studio_sessions SET expires=0').run();
+  env.TIKTOK_STUDIO_DB.sqlite.prepare('UPDATE studio_jobs SET expires=0').run();
   assert.equal((await onRequest({request:request('session','GET',s),env})).status,401);
   assert.equal(env.TIKTOK_STUDIO_DB.sqlite.prepare('SELECT count(*) AS n FROM studio_sessions').get().n,0);
+  assert.equal(env.TIKTOK_MEDIA_BUCKET.objects.size,0);
 });
