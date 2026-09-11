@@ -7,6 +7,10 @@ import { seal, unseal, hash, randomToken, validatePost, validateUploadUrl, bound
 const origin = 'https://www.mbabaziblessing.com';
 const secret = 'test-only-secret-abcdefghijklmnopqrstuvwxyz';
 const creator = { creator_nickname:'Test Creator', creator_username:'test', privacy_level_options:['SELF_ONLY'], max_video_post_duration_sec:60, comment_disabled:false };
+const fixedLengths=[];
+if (!globalThis.FixedLengthStream) globalThis.FixedLengthStream=class {
+  constructor(length) { fixedLengths.push(length); const stream=new TransformStream(); this.readable=stream.readable; this.writable=stream.writable; }
+};
 const valid = () => ({ requestId:randomToken(), consent:true, privacy:'SELF_ONLY', size:16, type:'video/mp4', duration:5, caption:'My original test', paidPartnership:false, comments:false, ownBrand:false, aiGenerated:false });
 function database() {
   const sqlite = new DatabaseSync(':memory:');
@@ -32,7 +36,9 @@ function request(path, method='GET', s=null, body, extra={}) {
 function mockTikTok(t, custom) {
   const calls=[];
   t.mock.method(globalThis,'fetch',async (url,options={})=>{
-    calls.push({url:String(url),options});
+    const upload=String(url).startsWith('https://open-upload.tiktokapis.com/');
+    const uploadedBody=upload&&options.body?await new Response(options.body).arrayBuffer():null;
+    calls.push({url:String(url),options,uploadedBody});
     if(custom) { const result=await custom(String(url),options); if(result) return result; }
     if(String(url).endsWith('/creator_info/query/')) return Response.json({data:creator,error:{code:'ok'}});
     if(String(url).endsWith('/video/init/')) return Response.json({data:{publish_id:'publish-one',upload_url:'https://open-upload.tiktokapis.com/video/?upload_token=secret'},error:{code:'ok'}});
@@ -102,7 +108,8 @@ test('post lifecycle keeps uploads private, prevents duplicates and isolates ses
   const upload=await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env});
   assert.deepEqual(await upload.json(),{stage:'processing',receiptBytes:16});
   const uploadCall=calls.find(c=>c.url.startsWith('https://open-upload.tiktokapis.com/'));
-  assert.equal(uploadCall.options.body instanceof Blob,true); assert.equal(uploadCall.options.body.size,16);
+  assert.equal(uploadCall.options.body instanceof ReadableStream,true); assert.equal(uploadCall.uploadedBody.byteLength,16);
+  assert.equal(fixedLengths.at(-1),16);
   assert.equal(uploadCall.options.headers['Content-Length'],undefined);
   assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,409);
   const status=await onRequest({request:request(`status?id=${id}`,'GET',s),env});
