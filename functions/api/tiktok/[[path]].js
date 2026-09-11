@@ -162,12 +162,16 @@ export async function onRequest({ request, env }) {
       requireValue(claimed, 'Upload already started. Check status.', 409);
       const data = await unseal(job.payload, env.TIKTOK_SESSION_SECRET);
       try {
-        // A Blob gives the Workers runtime a fixed-size body so it can generate the
-        // transport Content-Length instead of forwarding an empty/chunked upload.
-        const uploadBody = new Blob([bytes], { type: 'video/mp4' });
-        const r = await fetch(validateUploadUrl(data.uploadUrl), { method: 'PUT', redirect: 'error', headers: {
+        // TikTok requires an exact Content-Length. Cloudflare documents that a
+        // FixedLengthStream, unlike an ordinary stream or Blob, prevents chunked
+        // transfer encoding and makes the runtime generate that header.
+        requireValue(typeof globalThis.FixedLengthStream === 'function', 'Cloudflare fixed-length upload support is unavailable.', 503);
+        const { readable, writable } = new globalThis.FixedLengthStream(bytes.length);
+        const streaming = new Blob([bytes], { type: 'video/mp4' }).stream().pipeTo(writable);
+        const uploading = fetch(validateUploadUrl(data.uploadUrl), { method: 'PUT', redirect: 'error', headers: {
           'Content-Type': 'video/mp4', 'Content-Range': `bytes 0-${bytes.length - 1}/${bytes.length}` },
-          body: uploadBody, signal: AbortSignal.timeout(90000) });
+          body: readable, signal: AbortSignal.timeout(90000) });
+        const [r] = await Promise.all([uploading, streaming]);
         requireValue(r.status === 201, 'TikTok did not confirm the full upload. Check status before trying another post.', 424);
         const receiptBytes = uploadReceipt(r, bytes.length);
         const payload = await seal({ ...data, receiptBytes }, env.TIKTOK_SESSION_SECRET);
