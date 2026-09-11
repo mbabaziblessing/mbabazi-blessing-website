@@ -11,6 +11,15 @@ const redirect = (url, cookies = []) => {
   cookies.forEach(c => headers.append('Set-Cookie', c));
   return new Response(null, { status: 303, headers });
 };
+function uploadReceipt(response, expected) {
+  const value = response.headers.get('Content-Range');
+  if (!value) return null;
+  const match = /^bytes\s+0-(\d+)\/(\d+)$/i.exec(value.trim());
+  requireValue(match && Number(match[2]) === expected, 'TikTok returned an invalid upload receipt.', 424);
+  const finalByte = Number(match[1]);
+  requireValue(finalByte === expected - 1 || finalByte === expected, 'TikTok did not acknowledge the complete file.', 424);
+  return expected;
+}
 async function tiktok(path, token, body) {
   const response = await fetch(`${API}${path}`, { method: body ? 'POST' : 'GET',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -153,12 +162,17 @@ export async function onRequest({ request, env }) {
       requireValue(claimed, 'Upload already started. Check status.', 409);
       const data = await unseal(job.payload, env.TIKTOK_SESSION_SECRET);
       try {
+        // A Blob gives the Workers runtime a fixed-size body so it can generate the
+        // transport Content-Length instead of forwarding an empty/chunked upload.
+        const uploadBody = new Blob([bytes], { type: 'video/mp4' });
         const r = await fetch(validateUploadUrl(data.uploadUrl), { method: 'PUT', redirect: 'error', headers: {
-          'Content-Type': 'video/mp4', 'Content-Length': String(bytes.length), 'Content-Range': `bytes 0-${bytes.length - 1}/${bytes.length}` },
-          body: bytes, signal: AbortSignal.timeout(90000) });
+          'Content-Type': 'video/mp4', 'Content-Range': `bytes 0-${bytes.length - 1}/${bytes.length}` },
+          body: uploadBody, signal: AbortSignal.timeout(90000) });
         requireValue(r.status === 201, 'TikTok did not confirm the full upload. Check status before trying another post.', 424);
-        await env.TIKTOK_STUDIO_DB.prepare("UPDATE studio_jobs SET stage = 'processing' WHERE id = ? AND owner = ?").bind(job.id, s.id).run();
-        return json({ stage: 'processing' });
+        const receiptBytes = uploadReceipt(r, bytes.length);
+        const payload = await seal({ ...data, receiptBytes }, env.TIKTOK_SESSION_SECRET);
+        await env.TIKTOK_STUDIO_DB.prepare("UPDATE studio_jobs SET stage = 'processing', payload = ? WHERE id = ? AND owner = ?").bind(payload, job.id, s.id).run();
+        return json({ stage: 'processing', receiptBytes });
       } catch (error) {
         await env.TIKTOK_STUDIO_DB.prepare("UPDATE studio_jobs SET stage = 'upload_uncertain' WHERE id = ? AND owner = ?").bind(job.id, s.id).run();
         throw error;
@@ -178,6 +192,7 @@ export async function onRequest({ request, env }) {
         failReason: status.fail_reason || null,
         uploadedBytes: Number.isSafeInteger(status.uploaded_bytes) ? status.uploaded_bytes : null,
         expectedBytes: job.size,
+        receiptBytes: Number.isSafeInteger(data.receiptBytes) ? data.receiptBytes : null,
       });
     }
     return json({ error: 'Endpoint or method not found.' }, 404);
