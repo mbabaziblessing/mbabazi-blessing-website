@@ -28,19 +28,16 @@ function row(id, status) {
   entry.label.textContent = `Upload ${id.slice(0, 8)} · ${status}`; $('activity').hidden = false;
 }
 function byteProgress(data) {
-  if (!Number.isSafeInteger(data.uploadedBytes) || !Number.isSafeInteger(data.expectedBytes)) return '';
-  return ` · ${data.uploadedBytes.toLocaleString()} of ${data.expectedBytes.toLocaleString()} bytes received`;
-}
-function receiptProgress(data) {
-  return Number.isSafeInteger(data.receiptBytes) ? ` · upload receipt ${data.receiptBytes.toLocaleString()} bytes` : '';
+  if (!Number.isSafeInteger(data.downloadedBytes) || !Number.isSafeInteger(data.expectedBytes)) return '';
+  return ` · ${data.downloadedBytes.toLocaleString()} of ${data.expectedBytes.toLocaleString()} bytes downloaded by TikTok`;
 }
 async function checkStatus(id) {
   const entry = jobs.get(id); if (entry) entry.button.disabled = true;
   try {
     const data = await api(`status?id=${encodeURIComponent(id)}`);
-    row(id, `${data.failReason ? `${data.status}: ${data.failReason}` : data.status}${byteProgress(data)}${receiptProgress(data)}`);
+    row(id, `${data.failReason ? `${data.status}: ${data.failReason}` : data.status}${byteProgress(data)}`);
     if (data.status === 'PUBLISH_COMPLETE') notice('TikTok confirmed the post is complete. Check Only me videos on your profile.');
-    else if (data.status === 'PROCESSING_UPLOAD') notice(`TikTok is still receiving or finalizing this upload${byteProgress(data)}${receiptProgress(data)}. Do not submit it again.`);
+    else if (['PROCESSING_DOWNLOAD', 'PROCESSING_UPLOAD'].includes(data.status)) notice(`TikTok is still downloading or finalizing this video${byteProgress(data)}. Do not submit it again.`);
     else if (data.status === 'FAILED') notice(`TikTok rejected this post: ${data.failReason || 'No failure reason was provided.'}`, true);
     return data.status;
   } catch (e) { notice(e.message, true); return 'CHECK_FAILED'; }
@@ -110,9 +107,9 @@ $('post-form').addEventListener('submit', async event => {
   try {
     notice('Preparing your approved upload…');
     const job = await api('init', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    jobId = job.id; row(jobId, 'Uploading'); notice('Uploading to TikTok. Keep this page open.');
+    jobId = job.id; row(jobId, 'Uploading to temporary storage'); notice('Uploading securely to temporary storage. Keep this page open.');
     await api(`upload?id=${encodeURIComponent(jobId)}`, { method: 'POST', headers: { 'Content-Type': 'video/mp4' }, body: file });
-    row(jobId, 'Processing'); notice('TikTok received the video. Checking processing status…');
+    row(jobId, 'TikTok download started'); notice('TikTok is downloading the video. Checking processing status…');
     for (let attempt = 0; attempt < 12; attempt++) {
       await new Promise(resolve => setTimeout(resolve, 10000));
       const status = await checkStatus(jobId);
