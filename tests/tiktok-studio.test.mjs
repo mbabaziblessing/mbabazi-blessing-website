@@ -36,7 +36,7 @@ function mockTikTok(t, custom) {
     if(custom) { const result=await custom(String(url),options); if(result) return result; }
     if(String(url).endsWith('/creator_info/query/')) return Response.json({data:creator,error:{code:'ok'}});
     if(String(url).endsWith('/video/init/')) return Response.json({data:{publish_id:'publish-one',upload_url:'https://open-upload.tiktokapis.com/video/?upload_token=secret'},error:{code:'ok'}});
-    if(String(url).startsWith('https://open-upload.tiktokapis.com/')) return new Response('',{status:201});
+    if(String(url).startsWith('https://open-upload.tiktokapis.com/')) return new Response('',{status:201,headers:{'Content-Range':'bytes 0-15/16'}});
     if(String(url).endsWith('/status/fetch/')) return Response.json({data:{status:'PUBLISH_COMPLETE',uploaded_bytes:16},error:{code:'ok'}});
     if(String(url).endsWith('/oauth/revoke/')) return Response.json({});
     throw new Error('Unexpected mock request');
@@ -99,10 +99,14 @@ test('post lifecycle keeps uploads private, prevents duplicates and isolates ses
   assert.equal((await onRequest({request:request(`status?id=${id}`,'GET',other),env})).status,404);
   const bytes=new Uint8Array(16); bytes.set(new TextEncoder().encode('ftyp'),4);
   assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',other,bytes,{'Content-Type':'video/mp4'}),env})).status,404);
-  assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,200);
+  const upload=await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env});
+  assert.deepEqual(await upload.json(),{stage:'processing',receiptBytes:16});
+  const uploadCall=calls.find(c=>c.url.startsWith('https://open-upload.tiktokapis.com/'));
+  assert.equal(uploadCall.options.body instanceof Blob,true); assert.equal(uploadCall.options.body.size,16);
+  assert.equal(uploadCall.options.headers['Content-Length'],undefined);
   assert.equal((await onRequest({request:request(`upload?id=${id}`,'POST',s,bytes,{'Content-Type':'video/mp4'}),env})).status,409);
   const status=await onRequest({request:request(`status?id=${id}`,'GET',s),env});
-  assert.deepEqual(await status.json(),{status:'PUBLISH_COMPLETE',failReason:null,uploadedBytes:16,expectedBytes:16});
+  assert.deepEqual(await status.json(),{status:'PUBLISH_COMPLETE',failReason:null,uploadedBytes:16,expectedBytes:16,receiptBytes:16});
   assert.equal(env.TIKTOK_STUDIO_DB.sqlite.prepare('SELECT stage FROM studio_jobs WHERE id=?').get(id).stage,'publish_complete');
   const response=await onRequest({request:request('session','GET',s),env}); const data=await response.text();
   assert.ok(!data.includes('secret-access-token')); assert.ok(!data.includes('upload_token'));

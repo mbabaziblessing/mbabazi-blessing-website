@@ -31,13 +31,16 @@ function byteProgress(data) {
   if (!Number.isSafeInteger(data.uploadedBytes) || !Number.isSafeInteger(data.expectedBytes)) return '';
   return ` · ${data.uploadedBytes.toLocaleString()} of ${data.expectedBytes.toLocaleString()} bytes received`;
 }
+function receiptProgress(data) {
+  return Number.isSafeInteger(data.receiptBytes) ? ` · upload receipt ${data.receiptBytes.toLocaleString()} bytes` : '';
+}
 async function checkStatus(id) {
   const entry = jobs.get(id); if (entry) entry.button.disabled = true;
   try {
     const data = await api(`status?id=${encodeURIComponent(id)}`);
-    row(id, `${data.failReason ? `${data.status}: ${data.failReason}` : data.status}${byteProgress(data)}`);
+    row(id, `${data.failReason ? `${data.status}: ${data.failReason}` : data.status}${byteProgress(data)}${receiptProgress(data)}`);
     if (data.status === 'PUBLISH_COMPLETE') notice('TikTok confirmed the post is complete. Check Only me videos on your profile.');
-    else if (data.status === 'PROCESSING_UPLOAD') notice(`TikTok is still receiving or finalizing this upload${byteProgress(data)}. Do not submit it again.`);
+    else if (data.status === 'PROCESSING_UPLOAD') notice(`TikTok is still receiving or finalizing this upload${byteProgress(data)}${receiptProgress(data)}. Do not submit it again.`);
     else if (data.status === 'FAILED') notice(`TikTok rejected this post: ${data.failReason || 'No failure reason was provided.'}`, true);
     return data.status;
   } catch (e) { notice(e.message, true); return 'CHECK_FAILED'; }
